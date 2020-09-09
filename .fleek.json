@@ -1,0 +1,12 @@
+{
+    "build": {
+      "image": "fleek/create-react-app",
+      "command": "yarn && yarn build",
+      "publicDir": "build",
+      "baseDir": "v0/dapp",
+      "environment": {
+        "REACT_APP_NETWORK_ID": 100,
+        "REACT_APP_NETWORK_NAME": "xDAI Chain"
+      }
+    }
+   }
