@@ -172,7 +172,7 @@ class TokenPanel extends Component {
           })}
         >
           {selectedTokenAddress ? (
-            <TokenLogo className="token-panel__selected-token-logo" address={selectedTokenAddress} />
+            <TokenLogo className="token-panel__selected-token-logo" address={selectedTokenAddress} defaultTokenLogo="🤑" />
           ) : null}
           <span>{tokenSymbol || t("selectToken")}</span>
         </div>
@@ -195,9 +195,11 @@ TokenPanel.propTypes = {
   approvals: PropTypes.shape({}).isRequired,
   onSelectTokenAddress: PropTypes.func,
   pendingApprovals: PropTypes.shape({}).isRequired,
-  selectedTokens: PropTypes.shape([]),
+  // selectedTokens: PropTypes.shape([]),
+  selectedTokens: PropTypes.array,
   selectedTokenAddress: PropTypes.string,
-  t: PropTypes.shape({}),
+  // t: PropTypes.shape({}),
+  t: PropTypes.func,
   tokenAddresses: PropTypes.shape({
     addresses: PropTypes.array.isRequired,
   }).isRequired,

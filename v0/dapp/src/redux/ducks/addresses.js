@@ -1,4 +1,4 @@
-import { MAINNET, RINKEBY } from "../../constants/addresses";
+import { MAINNET, RINKEBY, LOCAL, XDAI } from "../../constants/addresses";
 
 const SET_ADDRESSES = "app/addresses/setAddresses";
 
@@ -20,7 +20,20 @@ export const setAddresses = networkId => {
         type: SET_ADDRESSES,
         payload: RINKEBY,
       };
-
+    // xDAI
+    case 100:
+    case "100":
+      return {
+        type: SET_ADDRESSES,
+        payload: XDAI,
+      };
+    // Local
+    case 8995:
+    case "8995":
+      return {
+        type: SET_ADDRESSES,
+        payload: LOCAL,
+      };
     default:
       return {
         type: SET_ADDRESSES,

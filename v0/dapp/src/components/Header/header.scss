@@ -8,7 +8,8 @@
   top: 0;
   justify-content: space-between;
   padding: 32px 120px 0;
-  background-color: $denim-blue;
+  // background-color: $denim-blue;
+  background-color: $sablier-orange;
 
   &__menu {
     @extend %row-nowrap;

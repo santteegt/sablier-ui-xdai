@@ -5,7 +5,8 @@
   height: 64px;
   align-items: center;
   justify-content: center;
-  background-color: $denim-blue;
+  // background-color: $denim-blue;
+  background-color: $sablier-orange;
   border-radius: 4px;
   cursor: pointer;
   font-family: "Larsseit Medium";
@@ -67,6 +68,10 @@
 
   &--yellow {
     background-color: $sandy-yellow;
+  }
+
+  &--blue {
+    background-color: $denim-blue;
   }
 
   &--white {

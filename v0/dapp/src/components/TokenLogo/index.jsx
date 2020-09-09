@@ -19,7 +19,7 @@ class TokenLogo extends Component {
   }
 
   render() {
-    const { address, size, className } = this.props;
+    const { address, size, className, defaultTokenLogo } = this.props;
     let path = "";
     const mainAddress = RINKEBY_TOKEN_MAP[address] ? RINKEBY_TOKEN_MAP[address] : address;
 
@@ -36,7 +36,7 @@ class TokenLogo extends Component {
       return (
         <div className={className} style={{ width: size, fontSize: size }}>
           <span role="img" aria-label="Not Found">
-            🤔
+            {defaultTokenLogo ? defaultTokenLogo:"🤔"}
           </span>
         </div>
       );
@@ -64,6 +64,7 @@ TokenLogo.propTypes = {
   address: PropTypes.string,
   size: PropTypes.string,
   className: PropTypes.string,
+  defaultTokenLogo: PropTypes.string,
 };
 
 TokenLogo.defaultProps = {

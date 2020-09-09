@@ -19,11 +19,11 @@ export default () => {
           <Link className="header__link" to="/dashboard">
             {t("dashboard")}
           </Link>
+          <Link className="header__link" to={links.menu.wrapeth} target="_blank">
+            Get wxDAI
+          </Link>
           <Link className="header__link" to={links.menu.github} target="_blank">
             GitHub
-          </Link>
-          <Link className="header__link" to={links.menu.twitter} target="_blank">
-            Twitter
           </Link>
         </div>
         <Web3Status />

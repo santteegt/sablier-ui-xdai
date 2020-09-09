@@ -1,6 +1,6 @@
-## Legacy User Interfaces
+## Sablier User Interfaces for xDAI chain
 
-A mirror of the legacy Sablier front-ends.
+Frontend for Sablier on xDAI.
 
 ### V0
 

@@ -13,8 +13,8 @@ export function getUnitValue(value, decimals, opts = { decimalPoints: 3 }) {
   }
   const divisor = new BN(10 ** (decimals || 18));
   let unitValue = value.dividedBy(divisor).toNumber();
-  if (opts.decimalPoints) {
-    unitValue = roundToDecimalPoints(unitValue, opts.decimalPoints);
-  }
+  // if (opts.decimalPoints) {
+  //   unitValue = roundToDecimalPoints(unitValue, opts.decimalPoints);
+  // }
   return unitValue;
 }

@@ -35,6 +35,7 @@ class Dashboard extends Component {
       const parser = new Parser(stream, account, block, t);
       return parser.parse();
     });
+    // console.log('streams', cellData)
 
     return (
       <ReactTable
@@ -111,7 +112,7 @@ class Dashboard extends Component {
             Cell: row => {
               return (
                 <div className="dashboard__cell__label">
-                  {row.value} {row.original.token.symbol}
+                  {Math.round(row.value)} {row.original.token.symbol}
                 </div>
               );
             },
@@ -194,15 +195,15 @@ class Dashboard extends Component {
         </Link>
         <Query query={GET_STREAMS} variables={{ owner: account.toLowerCase() }}>
           {({ loading, error, data }) => {
-            console.log({ loading, error, data });
+            // console.log('streams', data)
             return (
               <div>
                 {!loading ? null : <Loader className="dashboard__loader" delay={100} />}
                 {!error ? null : <div className="dashboard__no-data">{t("error")}</div>}
-                {loading || (data && data.streams && data.streams.length !== 0) ? null : (
+                {loading || (data && data.proxyStreams && data.proxyStreams.length !== 0) ? null : (
                   <div className="dashboard__no-data">{t("noData")}</div>
                 )}
-                {this.renderTable(data.streams || [])}
+                {this.renderTable(data.proxyStreams || [])}
               </div>
             );
           }}
@@ -219,7 +220,8 @@ Dashboard.propTypes = {
     timestamp: PropTypes.object.isRequired,
   }),
   push: PropTypes.func.isRequired,
-  t: PropTypes.shape({}),
+  // t: PropTypes.shape({}),
+  t: PropTypes.func,
 };
 
 Dashboard.defaultProps = {

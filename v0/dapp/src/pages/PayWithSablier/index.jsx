@@ -16,6 +16,7 @@ import InputWithCurrencySuffix from "./InputWithCurrencySuffix";
 import IntervalPanel from "./IntervalPanel";
 import PrimaryButton from "../../components/PrimaryButton";
 import SablierABI from "../../abi/sablier";
+import PayrollABI from "../../abi/payroll";
 import SablierDateTime from "./DateTime";
 import TokenApprovalModal from "../../components/TokenApprovalModal";
 import TokenPanel from "../../components/TokenPanel";
@@ -37,7 +38,7 @@ import "./pay-with-sablier.scss";
 const initialState = {
   deposit: 0,
   duration: 0,
-  interval: "",
+  interval: "minute",
   minTime: undefined,
   payment: null,
   paymentLabel: "",
@@ -58,10 +59,12 @@ class PayWithSablier extends Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const { account, isConnected, sablierAddress, tokenAddresses, watchBalance, watchApprovals } = nextProps;
+    const { account, isConnected, sablierAddress, payrollAddress, tokenAddresses, watchBalance, watchApprovals } = nextProps;
     const { tokenAddress, tokenSymbol } = prevState;
 
-    const defaultTokenAddress = tokenAddresses.addresses.find(address => address[0] === DEFAULT_TOKEN_SYMBOL)[1];
+    let defaultTokenAddress = tokenAddresses.addresses.find(address => address[0] === DEFAULT_TOKEN_SYMBOL)
+    defaultTokenAddress = defaultTokenAddress ? defaultTokenAddress[1]:tokenAddresses.addresses[0][1]
+    // const defaultTokenAddress = tokenAddresses.addresses.find(address => address[0] === DEFAULT_TOKEN_SYMBOL)[1];
     const minTime = prevState.minTime || getMinStartTime();
     const startTime = prevState.startTime || minTime;
 
@@ -72,6 +75,7 @@ class PayWithSablier extends Component {
     if (isAddress(account)) {
       watchBalance({ balanceOf: account, tokenAddress: defaultTokenAddress });
       watchApprovals({ spender: sablierAddress, tokenAddress: defaultTokenAddress, tokenOwner: account });
+      watchApprovals({ spender: payrollAddress, tokenAddress: defaultTokenAddress, tokenOwner: account });
     }
 
     if (
@@ -113,9 +117,20 @@ class PayWithSablier extends Component {
     this.setState({ tokenAddress, tokenSymbol });
   }
 
-  async onSubmit() {
-    const { account, addPendingTx, balances, sablierAddress, t, web3 } = this.props;
-    const { interval, payment, recipient, tokenAddress } = this.state;
+  getEffectiveDeposit() {
+    const { account, balances } = this.props;
+    const { deposit, tokenAddress, startTime, stopTime } = this.state;
+    const { decimals } = balances[tokenAddress][account];
+    const startTime_ = Math.round((+startTime) / 1000);
+    const stopTime_ = Math.round((+stopTime) / 1000);
+    const streamTime = stopTime_ - startTime_;
+    const amountBN = (new BN(deposit)).multipliedBy(10 ** decimals);
+    return amountBN.minus(amountBN.mod(new BN(streamTime)));
+  }
+
+  async onSubmit(checkedAllowance) {
+    const { account, addPendingTx, balances, payrollAddress, push, sablierAddress, t, web3 } = this.props;
+    const { recipient, startTime, stopTime, tokenAddress, } = this.state;
 
     if (
       this.isTokenInvalid() ||
@@ -128,7 +143,7 @@ class PayWithSablier extends Component {
       return;
     }
 
-    if (this.isUnapproved()) {
+    if (!checkedAllowance && this.isUnapproved()) {
       this.setState({ showTokenApprovalModal: true });
       return;
     }
@@ -138,12 +153,9 @@ class PayWithSablier extends Component {
       return;
     }
 
-    const { startBlock, stopBlock } = this.getStartAndStopBlock();
-    const { decimals } = balances[tokenAddress][account];
-    const adjustedPayment = new BN(payment).multipliedBy(10 ** decimals).toFixed(0);
-    const intervalInBlocks = PayWithSablier.getBlockDeltaForInterval(interval)
-      .toNumber()
-      .toFixed(0);
+    const startTime_ = Math.round((+startTime) / 1000);
+    const stopTime_ = Math.round((+stopTime) / 1000);
+    const effectiveDeposit = this.getEffectiveDeposit();
 
     let gasPrice = "8000000000";
     try {
@@ -153,15 +165,30 @@ class PayWithSablier extends Component {
         .toString();
       // eslint-disable-next-line no-empty
     } catch {}
-    new web3.eth.Contract(SablierABI, sablierAddress).methods
-      .createStream(account, recipient, tokenAddress, startBlock, stopBlock, adjustedPayment, intervalInBlocks)
+    // console.log('Stream', account, recipient, tokenAddress, effectiveDeposit.toString(), startTime_, stopTime_)
+
+    let payrollContract = new web3.eth.Contract(PayrollABI, payrollAddress);
+
+    payrollContract.methods
+      .createSalary(web3.utils.toChecksumAddress(recipient), 
+        web3.utils.toHex(effectiveDeposit), 
+        web3.utils.toChecksumAddress(tokenAddress), 
+        web3.utils.toHex(startTime_), web3.utils.toHex(stopTime_))
       .send({ from: account, gasPrice })
       .once("transactionHash", transactionHash => {
         addPendingTx(transactionHash);
-        this.subscribeToRawStreamId();
+
+        payrollContract.events.CreateSalary({
+          filter: {company: account}
+        }, (error, event) => {
+          // if(error) console.log('EVENT error', error)
+          // console.log('EVENT', error, event)
+          push(`/stream/${event.returnValues.salaryId}`);
+        })
       })
       .once("error", err => {
-        this.handleError(err);
+        console.log('Error', err)
+        this.handleError(err.message);
       });
   }
 
@@ -211,16 +238,17 @@ class PayWithSablier extends Component {
   }
 
   isUnapproved() {
-    const { account, sablierAddress, selectors } = this.props;
-    const { deposit, tokenAddress } = this.state;
+    const { account, sablierAddress, payrollAddress, selectors } = this.props;
+    const { tokenAddress } = this.state;
 
     if (!tokenAddress || tokenAddress === "ETH") {
       return false;
     }
 
-    const { value: allowance, decimals } = selectors().getApprovals(tokenAddress, account, sablierAddress);
-    const depositBN = new BN(deposit).multipliedBy(10 ** decimals);
-    if (allowance.isGreaterThan(depositBN)) {
+    const { value: allowance, decimals } = selectors().getApprovals(tokenAddress, account, payrollAddress);
+    const effectiveDeposit = this.getEffectiveDeposit();
+    // console.log('isUnapproved', allowance.toString(), decimals, effectiveDeposit.toString())
+    if (allowance.isGreaterThanOrEqualTo(effectiveDeposit)) {
       return false;
     }
 
@@ -447,7 +475,7 @@ class PayWithSablier extends Component {
 
     const minutes = getMinutesForInterval(interval).toNumber();
     const stopTimeMinTime = isDayJs(startTime)
-      ? startTime.add(Math.max(minutes, INTERVAL_MINUTES.hour), "minute")
+      ? startTime.add(Math.max(minutes, INTERVAL_MINUTES.fivemin), "minute")
       : startTime;
 
     return (
@@ -528,9 +556,9 @@ class PayWithSablier extends Component {
               "pay-with-sablier__input--invalid": this.isIntervalInvalid(),
             })}
             interval={interval}
-            onSelectInterval={selectedInterval =>
+            onSelectInterval={selectedInterval => {
               this.setState({ interval: selectedInterval }, () => this.recalcState())
-            }
+            }}
           />
         </div>
       </div>
@@ -603,8 +631,8 @@ class PayWithSablier extends Component {
           rightLabel={formatDuration(t, duration)}
           style={{ marginTop: "24px" }}
         />
-        <DashedLine className="pay-with-sablier__receipt__dashed-line" leftLabel={t("ourFee")} rightLabel={t("none")} />
-        <PrimaryButton
+        {/*<DashedLine className="pay-with-sablier__receipt__dashed-line" leftLabel={t("ourFee")} rightLabel={t("none")} />*/}
+        {/*<PrimaryButton
           className={classnames([
             "pay-with-sablier__button",
             "pay-with-sablier__receipt__warning-button",
@@ -615,7 +643,7 @@ class PayWithSablier extends Component {
           label={t("betaWarning")}
           labelClassName={classnames("primary-button__label--black")}
           onClick={() => {}}
-        />
+        />*/}
         <PrimaryButton
           className={classnames("pay-with-sablier__button", "pay-with-sablier__receipt__deposit-button")}
           disabled={isDepositInvalid}
@@ -644,17 +672,22 @@ class PayWithSablier extends Component {
   }
 
   renderTokenApprovalModal() {
-    const { account } = this.props;
+    const { account, web3 } = this.props;
     const { showTokenApprovalModal, tokenAddress, tokenSymbol } = this.state;
 
     if (!showTokenApprovalModal) {
       return null;
     }
+    const effectiveDeposit = web3.utils.toHex(this.getEffectiveDeposit());
 
     return (
       <TokenApprovalModal
         account={account}
-        onApproveTokenSuccess={() => this.setState({ showTokenApprovalModal: false })}
+        allowance={effectiveDeposit}
+        onApproveTokenSuccess={() => {
+          this.setState({ showTokenApprovalModal: false });
+          this.onSubmit(true);
+        }}
         onClose={() => this.setState({ showTokenApprovalModal: false })}
         tokenAddress={tokenAddress}
         tokenSymbol={tokenSymbol}
@@ -688,8 +721,10 @@ PayWithSablier.propTypes = {
   isConnected: PropTypes.bool.isRequired,
   push: PropTypes.func.isRequired,
   sablierAddress: PropTypes.string,
+  payrollAddress: PropTypes.string,
   selectors: PropTypes.func.isRequired,
-  t: PropTypes.shape({}),
+  // t: PropTypes.shape({}),
+  t: PropTypes.func,
   tokenAddresses: PropTypes.shape({
     addresses: PropTypes.array.isRequired,
   }).isRequired,
@@ -712,6 +747,7 @@ PayWithSablier.defaultProps = {
   block: {},
   hasPendingTransactions: false,
   sablierAddress: "",
+  payrollAddress: "",
   t: {},
 };
 
@@ -725,6 +761,7 @@ export default connect(
     // eslint-disable-next-line eqeqeq
     isConnected: !!state.web3connect.account && state.web3connect.networkId == (process.env.REACT_APP_NETWORK_ID || 1),
     sablierAddress: state.addresses.sablierAddress,
+    payrollAddress: state.addresses.payrollAddress,
     tokenAddresses: state.addresses.tokenAddresses,
     tokenAddressesToSymbols: state.addresses.tokenAddressesToSymbols,
     web3: state.web3connect.web3,

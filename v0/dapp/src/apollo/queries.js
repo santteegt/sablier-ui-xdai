@@ -1,24 +1,28 @@
 import gql from "graphql-tag";
 
 export const GET_STREAMS = gql`
-  query Streams($owner: String!) {
-    streams(first: 100, orderBy: timestamp, orderDirection: desc, where: { owner: $owner }) {
+  query ProxyStreams($owner: String!) {
+    proxyStreams(first: 100, orderBy: timestamp, orderDirection: desc, where: { sender: $owner }) {
       id
-      flow
-      owner
-      rawStream {
+      sender
+      recipient
+      stream {
         id
-        interval
-        payment
-        recipient
-        redemption {
-          id
-          recipientAmount
-          senderAmount
-        }
         sender
-        startBlock
-        stopBlock
+        recipient
+        deposit
+        cancellation {
+          id
+          recipientBalance
+          recipientInterest
+          senderBalance
+          senderInterest
+          sablierInterest
+          timestamp
+        }
+        startTime
+        stopTime
+        ratePerSecond
         token {
           id
           decimals
@@ -35,6 +39,7 @@ export const GET_STREAMS = gql`
           id
           amount
         }
+        timestamp
       }
       timestamp
     }
@@ -42,23 +47,28 @@ export const GET_STREAMS = gql`
 `;
 
 export const GET_STREAM = gql`
-  query Stream($streamId: ID!) {
-    stream(id: $streamId) {
+  query ProxyStream($streamId: ID!) {
+    proxyStream(id: $streamId) {
       id
-      flow
-      rawStream {
+      sender
+      recipient
+      stream {
         id
-        interval
-        payment
-        recipient
-        redemption {
-          id
-          recipientAmount
-          senderAmount
-        }
         sender
-        startBlock
-        stopBlock
+        recipient
+        deposit
+        cancellation {
+          id
+          recipientBalance
+          recipientInterest
+          senderBalance
+          senderInterest
+          sablierInterest
+          timestamp
+        }
+        startTime
+        stopTime
+        ratePerSecond
         token {
           id
           decimals
@@ -75,7 +85,9 @@ export const GET_STREAM = gql`
           id
           amount
         }
+        timestamp
       }
+      timestamp
     }
   }
 `;

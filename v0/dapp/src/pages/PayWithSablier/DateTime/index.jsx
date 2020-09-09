@@ -66,7 +66,7 @@ class SablierDateTime extends Component {
   }
 
   renderModal() {
-    const { maxTime, minTime, selectedTime } = this.props;
+    const { maxTime, minTime, name, selectedTime } = this.props;
     const { showModal, showTimeSelect } = this.state;
 
     if (!showModal) {
@@ -90,7 +90,7 @@ class SablierDateTime extends Component {
           selected={selectedDate}
           showTimeSelect={showTimeSelect}
           dateFormat="h:mm aa"
-          timeIntervals={INTERVAL_MINUTES.hour}
+          timeIntervals={INTERVAL_MINUTES.fivemin}
           withPortal
         />
       </Modal>
@@ -139,7 +139,8 @@ SablierDateTime.propTypes = {
     minute: PropTypes.func.isRequired,
     toDate: PropTypes.func.isRequired,
   }),
-  t: PropTypes.shape({}),
+  // t: PropTypes.shape({}),
+  t: PropTypes.func,
 };
 
 SablierDateTime.defaultProps = {

@@ -39,9 +39,9 @@ class TokenApprovalModal extends Component {
   }
 
   async onSubmit() {
-    const { account, addPendingTx, sablierAddress, tokenAddress, web3 } = this.props;
+    const { account, allowance, addPendingTx, sablierAddress, onApproveTokenSuccess, payrollAddress, tokenAddress, web3 } = this.props;
     // Set allowance to maximum value possible so that we don't have to ask the user again
-    const allowance = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
+    // const allowance = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
     let gasPrice = "8000000000";
     try {
       gasPrice = await web3.eth.getGasPrice();
@@ -52,13 +52,18 @@ class TokenApprovalModal extends Component {
       // eslint-disable-next-line no-empty
     } catch {}
     new web3.eth.Contract(ERC20ABI, tokenAddress).methods
-      .approve(sablierAddress, allowance)
+      .approve(payrollAddress, allowance)
       .send({ from: account, gasPrice })
       .once("transactionHash", transactionHash => {
         addPendingTx(transactionHash);
         this.setState({ submitted: true });
       })
+      .once("receipt", receipt => {
+        // console.log('receipt', receipt)
+        onApproveTokenSuccess();
+      })
       .once("error", err => {
+        console.log('ERROR APPROVAL', err)
         this.handleError(err);
       });
   }
@@ -123,6 +128,7 @@ class TokenApprovalModal extends Component {
 
 TokenApprovalModal.propTypes = {
   account: PropTypes.string,
+  allowance: PropTypes.string,
   addPendingTx: PropTypes.func.isRequired,
   // See `componentDidUpdate`
   // eslint-disable-next-line react/no-unused-prop-types
@@ -131,7 +137,8 @@ TokenApprovalModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   sablierAddress: PropTypes.string,
   selectors: PropTypes.func.isRequired,
-  t: PropTypes.shape({}),
+  // t: PropTypes.shape({}),
+  t: PropTypes.func,
   tokenAddress: PropTypes.string.isRequired,
   tokenSymbol: PropTypes.string.isRequired,
   web3: PropTypes.shape({
@@ -144,8 +151,10 @@ TokenApprovalModal.propTypes = {
 
 TokenApprovalModal.defaultProps = {
   account: "",
+  allowance: "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
   approvals: "",
   sablierAddress: "",
+  payrollAddress: "",
   t: {},
 };
 
@@ -154,6 +163,7 @@ export default connect(
     account: state.web3connect.account,
     approvals: state.web3connect.approvals,
     sablierAddress: state.addresses.sablierAddress,
+    payrollAddress: state.addresses.payrollAddress,
     web3: state.web3connect.web3,
   }),
   dispatch => ({

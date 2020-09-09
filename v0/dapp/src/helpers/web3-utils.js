@@ -1,7 +1,7 @@
 export function getEtherscanAddressLink(address) {
-  return `https://etherscan.io/address/${address}`;
+  return `https://blockscout.com/poa/xdai/address/${address}`;
 }
 
 export function getEtherscanTransactionLink(txhash) {
-  return `https://etherscan.io/tx/${txhash}`;
+  return `https://blockscout.com/poa/xdai/tx/${txhash}`;
 }

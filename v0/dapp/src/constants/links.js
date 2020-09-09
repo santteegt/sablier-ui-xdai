@@ -2,11 +2,12 @@
 module.exports = {
   menu: {
     docs: "https://beta.sablier.app",
-    github: "https://github.com/sablierhq/",
-    twitter: "https://twitter.com/SablierHQ",
+    github: "https://github.com/santteegt/sablier/tree/xdai",
+    twitter: "https://twitter.com/santteegt",
+    wrapeth: "https://wrapeth.com/",
   },
   share: {
-    sablier: "https://beta.sablier.app",
+    sablier: "http://localhost:3000",
   },
   wallets: {
     brave: {

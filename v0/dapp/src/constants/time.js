@@ -38,6 +38,7 @@ export const INTERVAL_BLOCKS = {
  */
 export const INTERVAL_MINUTES = {
   minute: 1,
+  fivemin: 5,
   quarterHour: 15,
   hour: 60,
   day: 1440,

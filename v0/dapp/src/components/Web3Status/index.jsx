@@ -148,10 +148,13 @@ class Web3Status extends Component {
 
 Web3Status.propTypes = {
   address: PropTypes.string,
-  confirmed: PropTypes.shape([]),
+  // confirmed: PropTypes.shape([]),
+  confirmed: PropTypes.array,
   isConnected: PropTypes.bool,
-  pending: PropTypes.shape([]),
-  t: PropTypes.shape({}),
+  // pending: PropTypes.shape([]),
+  pending: PropTypes.array,
+  // t: PropTypes.shape({}),
+  t: PropTypes.func,
 };
 
 Web3Status.defaultProps = {
@@ -159,7 +162,7 @@ Web3Status.defaultProps = {
   confirmed: [],
   isConnected: false,
   pending: [],
-  t: {},
+  // t: {},
 };
 
 export default connect(state => {

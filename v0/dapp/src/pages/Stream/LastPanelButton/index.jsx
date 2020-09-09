@@ -22,7 +22,7 @@ const LastPanelButton = props => {
     if ([StreamStatus.CREATED.name, StreamStatus.ACTIVE.name, StreamStatus.ENDED.name].includes(stream.status)) {
       callback = onClickWithdraw;
       icon = FaInboxOut;
-      label = t("withdraw.verbatim");
+      label = stream.funds.withdrawable > 0 ? t("withdraw.verbatim"):t("withdraw.empty");
     } else {
       return null;
     }
@@ -39,10 +39,11 @@ const LastPanelButton = props => {
   return (
     <div>
       <PrimaryButton
-        className={classnames(["stream__panel-container-button", "stream__button", "primary-button--yellow"])}
+        className={classnames(["stream__panel-container-button", "stream__button", `primary-button--${(stream.flow === StreamFlow.OUT.name) ? "red":"blue"}`])}
         icon={icon}
         label={label}
         onClick={() => callback()}
+        disabled={stream.funds.withdrawable == 0}
       />
     </div>
   );
@@ -52,7 +53,8 @@ LastPanelButton.propTypes = {
   onClickRedeem: PropTypes.func.isRequired,
   onClickWithdraw: PropTypes.func.isRequired,
   stream: PropTypes.object.isRequired,
-  t: PropTypes.shape({}),
+  // t: PropTypes.shape({}),
+  t: PropTypes.func,
 };
 
 LastPanelButton.defaultProps = {

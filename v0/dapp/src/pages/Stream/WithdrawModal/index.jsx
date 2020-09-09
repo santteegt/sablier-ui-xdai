@@ -10,7 +10,9 @@ import { withTranslation } from "react-i18next";
 import DashedLine from "../../../components/DashedLine";
 import Modal from "../../../components/Modal";
 import PrimaryButton from "../../../components/PrimaryButton";
+import PayrollABI from "../../../abi/payroll";
 import SablierABI from "../../../abi/sablier";
+
 
 import { addPendingTx as web3AddPendingTx } from "../../../redux/ducks/web3connect";
 import { countDecimalPoints, roundToDecimalPoints } from "../../../helpers/format-utils";
@@ -56,10 +58,12 @@ class WithdrawModal extends Component {
   }
 
   async onSubmitWithdraw() {
-    const { account, addPendingTx, sablierAddress, stream, web3 } = this.props;
+    const { account, addPendingTx, payrollAddress, sablierAddress, stream, web3 } = this.props;
     const { amountToWithdraw } = this.state;
 
-    const adjustedAmount = new BN(amountToWithdraw).multipliedBy(10 ** stream.token.decimals).toFixed(0);
+    const effectiveWithdraw = amountToWithdraw > stream.funds.withdrawable ? stream.funds.withdrawable:amountToWithdraw;
+    const adjustedAmount = new BN(effectiveWithdraw).multipliedBy(10 ** stream.token.decimals).toFixed(0);
+    // console.log('adjustedAmount', adjustedAmount)
     let gasPrice = "8000000000";
     try {
       gasPrice = await web3.eth.getGasPrice();
@@ -68,21 +72,25 @@ class WithdrawModal extends Component {
         .toString();
       // eslint-disable-next-line no-empty
     } catch {}
-    new web3.eth.Contract(SablierABI, sablierAddress).methods
-      .withdrawFromStream(stream.rawStreamId, adjustedAmount)
+    // console.log('ToWithdraw', adjustedAmount, account, stream)
+    new web3.eth.Contract(PayrollABI, payrollAddress).methods
+      .withdrawFromSalary(stream.rawStreamId, adjustedAmount)
       .send({ from: account, gasPrice })
       .once("transactionHash", transactionHash => {
         addPendingTx(transactionHash);
         this.setState({ submitted: true });
       })
       .once("error", err => {
-        this.handleError(err);
+        this.handleError(err.message);
       });
   }
 
   getSliderStep() {
     const { stream } = this.props;
     const decimalPoints = countDecimalPoints(stream.funds.withdrawable);
+    if (stream.funds.withdrawable == 1) {
+      return stream.funds.withdrawable / 100;
+    }
     if (decimalPoints === 0) {
       return 1;
     }
@@ -110,6 +118,7 @@ class WithdrawModal extends Component {
     const isWithdrawable = stream.funds.withdrawable !== 0;
     const disabled = !isWithdrawable || hasPendingTransactions;
     const sliderStep = this.getSliderStep();
+
     return (
       <Modal
         onClose={() => {
@@ -173,14 +182,17 @@ WithdrawModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   onWithdrawSuccess: PropTypes.func.isRequired,
   sablierAddress: PropTypes.string,
+  payrollAddress: PropTypes.string,
   stream: PropTypes.object.isRequired,
   web3: PropTypes.object.isRequired,
-  t: PropTypes.shape({}),
+  // t: PropTypes.shape({}),
+  t: PropTypes.func,
 };
 
 WithdrawModal.defaultProps = {
   account: "",
   sablierAddress: "",
+  payrollAddress: "",
   t: {},
 };
 
@@ -189,6 +201,7 @@ export default connect(
     account: state.web3connect.account,
     hasPendingTransactions: !!state.web3connect.transactions.pending.length,
     sablierAddress: state.addresses.sablierAddress,
+    payrollAddress: state.addresses.payrollAddress,
     web3: state.web3connect.web3,
   }),
   dispatch => ({

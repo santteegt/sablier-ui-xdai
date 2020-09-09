@@ -9,7 +9,7 @@ import "./logo.scss";
 export default () => {
   return (
     <Link className="logo" to="/">
-      <img className="logo__icon" alt="Logo" src={LogoWhite} />
+      {/* <img className="logo__icon" alt="Logo" src={LogoWhite} /> */}
       <img className="logo__typeface" alt="Logo Typeface" src={LogoTypefaceWhite} />
     </Link>
   );

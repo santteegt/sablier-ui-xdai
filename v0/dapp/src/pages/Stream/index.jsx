@@ -101,7 +101,7 @@ const Funds = ({ downLabel, stream, topLabel }) => (
           <span className="stream__funds-item__value-label">
             {stream.funds.paid.toLocaleString()} {stream.token.symbol}
           </span>
-          <TokenLogo className="stream__funds-item__token-logo" address={stream.token.address} size="32px" />
+          <TokenLogo className="stream__funds-item__token-logo" address={stream.token.address} size="32px" defaultTokenLogo="💸" />
         </div>
       </div>
     </div>
@@ -111,9 +111,9 @@ const Funds = ({ downLabel, stream, topLabel }) => (
         <span className="stream__funds-item__title-label">{downLabel}</span>
         <div className="stream__funds-item__value-container">
           <span className="stream__funds-item__value-label">
-            {stream.funds.deposit.toLocaleString() || "0"} {stream.token.symbol}
+            {stream.status === StreamStatus.REDEEMED.name ? stream.funds.remaining.toLocaleString():stream.funds.deposit.toLocaleString()} {stream.token.symbol}
           </span>
-          <TokenLogo className="stream__funds-item__token-logo" address={stream.token.address} size="32px" />
+          <TokenLogo className="stream__funds-item__token-logo" address={stream.token.address} size="32px" defaultTokenLogo="🤑" />
         </div>
       </div>
     </div>
@@ -122,7 +122,8 @@ const Funds = ({ downLabel, stream, topLabel }) => (
 
 Funds.propTypes = {
   downLabel: PropTypes.string.isRequired,
-  stream: PropTypes.string.isRequired,
+  // stream: PropTypes.string.isRequired,
+  stream: PropTypes.object.isRequired,
   topLabel: PropTypes.string.isRequired,
 };
 
@@ -466,7 +467,8 @@ class Stream extends Component {
 
   render() {
     const { account, block, match, t } = this.props;
-    const streamId = `${account.toLowerCase()}/${match.params.rawStreamId}`;
+    // const streamId = `${account.toLowerCase()}/${match.params.rawStreamId}`;
+    const streamId = `${match.params.rawStreamId}`;
 
     // Note that we are not polling the GraphQL server (we could do it by setting the `pollInterval` prop).
     // The reason for that is that it causes unexpected behaviour with the value of `loading` - it's set to
@@ -477,12 +479,14 @@ class Stream extends Component {
       <Query query={GET_STREAM} variables={{ streamId }}>
         {({ loading, error, data, refetch }) => {
           // @see https://github.com/apollographql/react-apollo/issues/2575
-          if (loading && !data.stream) return <Loader className="stream__loader" delay={100} />;
+          console.log('selected stream', data)
+          if (loading && !data.proxyStream) return <Loader className="stream__loader" delay={100} />;
           if (error) return <div className="stream__no-data">{t("error")}</div>;
-          if (!data || !data.stream) return <div className="stream__no-data">{t("noData")}</div>;
+          if (!account || !data || !data.proxyStream) return <div className="stream__no-data">{t("noData")}</div>;
 
-          const parser = new Parser(data.stream, account, block, t);
+          const parser = new Parser(data.proxyStream, account, block, t);
           const stream = parser.parse();
+          console.log('stream', stream)
           return (
             <div className="stream">
               {this.renderLeftContainer(stream)}
@@ -512,7 +516,8 @@ Stream.propTypes = {
     url: PropTypes.string,
   }),
   push: PropTypes.func.isRequired,
-  t: PropTypes.shape({}),
+  // t: PropTypes.shape({}),
+  t: PropTypes.func
 };
 
 Stream.defaultProps = {

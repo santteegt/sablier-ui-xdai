@@ -112,7 +112,7 @@
   "selectAmount": "Select amount",
   "selectToken": "Select a token",
   "share": "Share",
-  "shareTwitterText": "Check out @SablierHQ for continuous payments on Ethereum 💸",
+  "shareTwitterText": "Check out @SablierHQ for continuous payments on xDAI chain 💸",
   "social": "Social",
   "soFar": "So far",
   "started": "Started",
@@ -141,7 +141,8 @@
   "week_plural": "Weeks",
   "withdraw": {
     "success": "Ka-Ching! You successfully withdrew {{ amount }} {{ tokenSymbol }} to your Ethereum wallet.",
-    "verbatim": "Withdraw"
+    "verbatim": "Withdraw",
+    "empty": "All funds withdrawn"
   },
   "withdrawn": "Withdrawn",
   "withdrawnSoFar": "Withdrawn so far",

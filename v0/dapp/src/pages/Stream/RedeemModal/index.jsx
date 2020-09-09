@@ -9,6 +9,7 @@ import { withTranslation } from "react-i18next";
 import DashedLine from "../../../components/DashedLine";
 import Modal from "../../../components/Modal";
 import PrimaryButton from "../../../components/PrimaryButton";
+import PayrollABI from "../../../abi/payroll";
 import SablierABI from "../../../abi/sablier";
 
 import { addPendingTx as web3AddPendingTx } from "../../../redux/ducks/web3connect";
@@ -44,7 +45,7 @@ class RedeemModal extends Component {
   }
 
   async onSubmitRedeem() {
-    const { account, addPendingTx, sablierAddress, stream, web3 } = this.props;
+    const { account, addPendingTx, payrollAddress, sablierAddress, stream, web3 } = this.props;
 
     let gasPrice = "8000000000";
     try {
@@ -54,15 +55,15 @@ class RedeemModal extends Component {
         .toString();
       // eslint-disable-next-line no-empty
     } catch {}
-    new web3.eth.Contract(SablierABI, sablierAddress).methods
-      .redeemStream(stream.rawStreamId)
+    new web3.eth.Contract(PayrollABI, payrollAddress).methods
+      .cancelSalary(stream.rawStreamId)
       .send({ from: account, gasPrice })
       .once("transactionHash", transactionHash => {
         addPendingTx(transactionHash);
         this.setState({ submitted: true });
       })
       .once("error", err => {
-        this.handleError(err);
+        this.handleError(err.message);
       });
   }
 
@@ -138,7 +139,8 @@ RedeemModal.propTypes = {
   onRedeemSuccess: PropTypes.func.isRequired,
   sablierAddress: PropTypes.string,
   stream: PropTypes.object.isRequired,
-  t: PropTypes.shape({}),
+  // t: PropTypes.shape({}),
+  t: PropTypes.func,
   web3: PropTypes.object.isRequired,
 };
 
@@ -146,6 +148,7 @@ RedeemModal.defaultProps = {
   account: "",
   hasPendingTransactions: false,
   sablierAddress: "",
+  payrollAddress: "",
   t: {},
 };
 
@@ -154,6 +157,7 @@ export default connect(
     account: state.web3connect.account,
     hasPendingTransactions: !!state.web3connect.transactions.pending.length,
     sablierAddress: state.addresses.sablierAddress,
+    payrollAddress: state.addresses.payrollAddress,
     web3: state.web3connect.web3,
   }),
   dispatch => ({

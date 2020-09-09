@@ -67,10 +67,10 @@ class IntervalPanel extends Component {
       <div
         className={classnames("interval-panel", className)}
         onClick={() => {
-          this.setState({ showIntervalDropdown: !showIntervalDropdown });
+          // this.setState({ showIntervalDropdown: !showIntervalDropdown });
         }}
         onKeyDown={() => {
-          this.setState({ showIntervalDropdown: !showIntervalDropdown });
+          // this.setState({ showIntervalDropdown: !showIntervalDropdown });
         }}
         role="button"
         tabIndex={0}
@@ -93,7 +93,8 @@ IntervalPanel.propTypes = {
   className: PropTypes.string,
   interval: PropTypes.string,
   onSelectInterval: PropTypes.func.isRequired,
-  t: PropTypes.shape({}),
+  // t: PropTypes.shape({}),
+  t: PropTypes.func,
 };
 
 IntervalPanel.defaultProps = {

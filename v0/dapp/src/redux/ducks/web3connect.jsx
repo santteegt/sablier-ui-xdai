@@ -142,7 +142,7 @@ export const initialize = () => (dispatch, getState) => {
         resolve(web3);
         return;
       } catch (error) {
-        console.error("User denied access.");
+        console.error("User denied access.", error);
         dispatch({ type: INITIALIZE });
         reject();
         return;
