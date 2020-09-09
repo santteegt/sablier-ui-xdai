@@ -61,7 +61,7 @@ class IntervalPanel extends Component {
 
   render() {
     const { className, interval, t } = this.props;
-    const { showIntervalDropdown } = this.state;
+    // const { showIntervalDropdown } = this.state;
 
     return (
       <div

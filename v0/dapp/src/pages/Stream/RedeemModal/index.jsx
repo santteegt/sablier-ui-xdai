@@ -10,7 +10,7 @@ import DashedLine from "../../../components/DashedLine";
 import Modal from "../../../components/Modal";
 import PrimaryButton from "../../../components/PrimaryButton";
 import PayrollABI from "../../../abi/payroll";
-import SablierABI from "../../../abi/sablier";
+// import SablierABI from "../../../abi/sablier";
 
 import { addPendingTx as web3AddPendingTx } from "../../../redux/ducks/web3connect";
 
@@ -45,7 +45,7 @@ class RedeemModal extends Component {
   }
 
   async onSubmitRedeem() {
-    const { account, addPendingTx, payrollAddress, sablierAddress, stream, web3 } = this.props;
+    const { account, addPendingTx, payrollAddress, /*sablierAddress,*/ stream, web3 } = this.props;
 
     let gasPrice = "8000000000";
     try {

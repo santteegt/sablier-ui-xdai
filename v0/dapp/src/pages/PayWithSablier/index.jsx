@@ -11,11 +11,11 @@ import { withApollo } from "react-apollo";
 import { withTranslation } from "react-i18next";
 
 import DashedLine from "../../components/DashedLine";
-import FaExclamationMark from "../../assets/images/fa-exclamation-mark.svg";
+// import FaExclamationMark from "../../assets/images/fa-exclamation-mark.svg";
 import InputWithCurrencySuffix from "./InputWithCurrencySuffix";
 import IntervalPanel from "./IntervalPanel";
 import PrimaryButton from "../../components/PrimaryButton";
-import SablierABI from "../../abi/sablier";
+// import SablierABI from "../../abi/sablier";
 import PayrollABI from "../../abi/payroll";
 import SablierDateTime from "./DateTime";
 import TokenApprovalModal from "../../components/TokenApprovalModal";
@@ -129,7 +129,7 @@ class PayWithSablier extends Component {
   }
 
   async onSubmit(checkedAllowance) {
-    const { account, addPendingTx, balances, payrollAddress, push, sablierAddress, t, web3 } = this.props;
+    const { account, addPendingTx, balances, payrollAddress, push, /*sablierAddress,*/ t, web3 } = this.props;
     const { recipient, startTime, stopTime, tokenAddress, } = this.state;
 
     if (
@@ -165,7 +165,7 @@ class PayWithSablier extends Component {
         .toString();
       // eslint-disable-next-line no-empty
     } catch {}
-    // console.log('Stream', account, recipient, tokenAddress, effectiveDeposit.toString(), startTime_, stopTime_)
+    console.log('New Stream', account, recipient, tokenAddress, effectiveDeposit.toString(), startTime_, stopTime_)
 
     let payrollContract = new web3.eth.Contract(PayrollABI, payrollAddress);
 
@@ -238,14 +238,14 @@ class PayWithSablier extends Component {
   }
 
   isUnapproved() {
-    const { account, sablierAddress, payrollAddress, selectors } = this.props;
+    const { account, /*sablierAddress,*/ payrollAddress, selectors } = this.props;
     const { tokenAddress } = this.state;
 
     if (!tokenAddress || tokenAddress === "ETH") {
       return false;
     }
 
-    const { value: allowance, decimals } = selectors().getApprovals(tokenAddress, account, payrollAddress);
+    const { value: allowance, /*decimals*/ } = selectors().getApprovals(tokenAddress, account, payrollAddress);
     const effectiveDeposit = this.getEffectiveDeposit();
     // console.log('isUnapproved', allowance.toString(), decimals, effectiveDeposit.toString())
     if (allowance.isGreaterThanOrEqualTo(effectiveDeposit)) {

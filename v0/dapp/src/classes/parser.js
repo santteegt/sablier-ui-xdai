@@ -163,14 +163,14 @@ export class Parser {
   }
 
   parseFunds() {
-    const { proxyStream, block } = this;
+    const { proxyStream, /*block*/ } = this;
     const { stream } = proxyStream;
     // const { interval, payment, startBlock, stopBlock, token, withdrawals } = stream;
     const { ratePerSecond, deposit, startTime, stopTime, token, withdrawals } = stream;
 
     const currTime = new BN(Math.round((new Date()).getTime() / 1000))
 
-    const totalBlockDeltaBN = stopTime.minus(startTime);
+    // const totalBlockDeltaBN = stopTime.minus(startTime);
     // const depositBN = totalBlockDeltaBN.dividedBy(interval).multipliedBy(payment);
 
     const streamTime = stopTime - startTime;
@@ -292,7 +292,7 @@ export class Parser {
 
   parseTimes() {
     // const { stream, block, translations } = this;
-    const { proxyStream, block, translations } = this;
+    const { proxyStream, /*block,*/ translations } = this;
     // const { rawStream } = stream;
     const { stream } = proxyStream;
     // const { startBlock, stopBlock } = rawStream;

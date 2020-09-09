@@ -39,7 +39,7 @@ class TokenApprovalModal extends Component {
   }
 
   async onSubmit() {
-    const { account, allowance, addPendingTx, sablierAddress, onApproveTokenSuccess, payrollAddress, tokenAddress, web3 } = this.props;
+    const { account, allowance, addPendingTx, /*sablierAddress,*/ onApproveTokenSuccess, payrollAddress, tokenAddress, web3 } = this.props;
     // Set allowance to maximum value possible so that we don't have to ask the user again
     // const allowance = "0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff";
     let gasPrice = "8000000000";

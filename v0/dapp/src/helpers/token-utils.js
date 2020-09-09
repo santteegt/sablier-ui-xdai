@@ -1,6 +1,6 @@
 /* eslint-disable import/prefer-default-export */
 import { BigNumber as BN } from "bignumber.js";
-import { roundToDecimalPoints } from "./format-utils";
+// import { roundToDecimalPoints } from "./format-utils";
 /**
  * Convert value measured in ERC20 decimals to the base unit
  *

@@ -11,7 +11,7 @@ import DashedLine from "../../../components/DashedLine";
 import Modal from "../../../components/Modal";
 import PrimaryButton from "../../../components/PrimaryButton";
 import PayrollABI from "../../../abi/payroll";
-import SablierABI from "../../../abi/sablier";
+// import SablierABI from "../../../abi/sablier";
 
 
 import { addPendingTx as web3AddPendingTx } from "../../../redux/ducks/web3connect";
@@ -58,7 +58,7 @@ class WithdrawModal extends Component {
   }
 
   async onSubmitWithdraw() {
-    const { account, addPendingTx, payrollAddress, sablierAddress, stream, web3 } = this.props;
+    const { account, addPendingTx, payrollAddress, /*sablierAddress,*/ stream, web3 } = this.props;
     const { amountToWithdraw } = this.state;
 
     const effectiveWithdraw = amountToWithdraw > stream.funds.withdrawable ? stream.funds.withdrawable:amountToWithdraw;
@@ -88,7 +88,7 @@ class WithdrawModal extends Component {
   getSliderStep() {
     const { stream } = this.props;
     const decimalPoints = countDecimalPoints(stream.funds.withdrawable);
-    if (stream.funds.withdrawable == 1) {
+    if (stream.funds.withdrawable === 1) {
       return stream.funds.withdrawable / 100;
     }
     if (decimalPoints === 0) {

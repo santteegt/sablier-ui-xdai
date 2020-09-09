@@ -66,7 +66,7 @@ class SablierDateTime extends Component {
   }
 
   renderModal() {
-    const { maxTime, minTime, name, selectedTime } = this.props;
+    const { maxTime, minTime, /*name,*/ selectedTime } = this.props;
     const { showModal, showTimeSelect } = this.state;
 
     if (!showModal) {
