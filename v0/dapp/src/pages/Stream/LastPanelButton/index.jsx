@@ -43,7 +43,7 @@ const LastPanelButton = props => {
         icon={icon}
         label={label}
         onClick={() => callback()}
-        disabled={stream.funds.withdrawable === 0}
+        disabled={stream.flow === StreamFlow.IN.name && stream.funds.withdrawable === 0}
       />
     </div>
   );

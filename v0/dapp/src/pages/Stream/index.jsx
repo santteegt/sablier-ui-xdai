@@ -479,14 +479,14 @@ class Stream extends Component {
       <Query query={GET_STREAM} variables={{ streamId }}>
         {({ loading, error, data, refetch }) => {
           // @see https://github.com/apollographql/react-apollo/issues/2575
-          console.log('selected stream', data)
+          // console.log('selected stream', data)
           if (loading && !data.proxyStream) return <Loader className="stream__loader" delay={100} />;
           if (error) return <div className="stream__no-data">{t("error")}</div>;
           if (!account || !data || !data.proxyStream) return <div className="stream__no-data">{t("noData")}</div>;
 
           const parser = new Parser(data.proxyStream, account, block, t);
           const stream = parser.parse();
-          console.log('stream', stream)
+          // console.log('stream', stream)
           return (
             <div className="stream">
               {this.renderLeftContainer(stream)}

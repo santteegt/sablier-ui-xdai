@@ -165,30 +165,47 @@ class PayWithSablier extends Component {
         .toString();
       // eslint-disable-next-line no-empty
     } catch {}
-    console.log('New Stream', account, recipient, tokenAddress, effectiveDeposit.toString(), startTime_, stopTime_)
+    // console.log('New Stream', payrollAddress, account, recipient, tokenAddress, 
+    //   (new web3.utils.BN(effectiveDeposit.toString(10))).toString(), 
+    //   (new web3.utils.BN(startTime_.toString(10))).toString(), (new web3.utils.BN(stopTime_.toString(10)).toString()))
 
     let payrollContract = new web3.eth.Contract(PayrollABI, payrollAddress);
 
     payrollContract.methods
-      .createSalary(web3.utils.toChecksumAddress(recipient), 
-        web3.utils.toHex(effectiveDeposit), 
+      .createSalary(
+        web3.utils.toChecksumAddress(recipient),
+        new web3.utils.BN(effectiveDeposit.toString(10)),
         web3.utils.toChecksumAddress(tokenAddress), 
-        web3.utils.toHex(startTime_), web3.utils.toHex(stopTime_))
-      .send({ from: account, gasPrice })
-      .once("transactionHash", transactionHash => {
-        addPendingTx(transactionHash);
+        new web3.utils.BN(startTime_.toString(10)), new web3.utils.BN(stopTime_.toString(10))
+      ).estimateGas({from: account}, (error, gas) => {
+        // console.log('Gasestimate', error, gas)
+        if (error) {
+          console.log('GasEstimate Error', error)
+          this.handleError(error.message);
+        } else {
+          payrollContract.methods
+          .createSalary(
+            web3.utils.toChecksumAddress(recipient),
+            new web3.utils.BN(effectiveDeposit.toString(10)),
+            web3.utils.toChecksumAddress(tokenAddress), 
+            new web3.utils.BN(startTime_.toString(10)), new web3.utils.BN(stopTime_.toString(10))
+          ).send({ from: account, gasPrice, gas })
+          .once("transactionHash", transactionHash => {
+            addPendingTx(transactionHash);
 
-        payrollContract.events.CreateSalary({
-          filter: {company: account}
-        }, (error, event) => {
-          // if(error) console.log('EVENT error', error)
-          // console.log('EVENT', error, event)
-          push(`/stream/${event.returnValues.salaryId}`);
-        })
-      })
-      .once("error", err => {
-        console.log('Error', err)
-        this.handleError(err.message);
+            payrollContract.events.CreateSalary({
+              filter: {company: account}
+            }, (error, event) => {
+              // if(error) console.log('EVENT error', error)
+              // console.log('EVENT', error, event)
+              push(`/stream/${event.returnValues.salaryId}`);
+            })
+          })
+          .once("error", err => {
+            console.log('Error', err)
+            this.handleError(err.message);
+          });
+        }
       });
   }
 
@@ -247,7 +264,7 @@ class PayWithSablier extends Component {
 
     const { value: allowance, /*decimals*/ } = selectors().getApprovals(tokenAddress, account, payrollAddress);
     const effectiveDeposit = this.getEffectiveDeposit();
-    // console.log('isUnapproved', allowance.toString(), decimals, effectiveDeposit.toString())
+    // console.log('isUnapproved', tokenAddress, allowance.toString(), decimals, payrollAddress, effectiveDeposit.toString())
     if (allowance.isGreaterThanOrEqualTo(effectiveDeposit)) {
       return false;
     }

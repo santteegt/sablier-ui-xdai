@@ -62,8 +62,9 @@ class WithdrawModal extends Component {
     const { amountToWithdraw } = this.state;
 
     const effectiveWithdraw = amountToWithdraw > stream.funds.withdrawable ? stream.funds.withdrawable:amountToWithdraw;
-    const adjustedAmount = new BN(effectiveWithdraw).multipliedBy(10 ** stream.token.decimals).toFixed(0);
-    // console.log('adjustedAmount', adjustedAmount)
+    let adjustedAmount = new BN(effectiveWithdraw).multipliedBy(10 ** stream.token.decimals).toFixed(0);
+    adjustedAmount = new web3.utils.BN(adjustedAmount.toString());
+    // console.log('adjustedAmount', adjustedAmount.toString())
     let gasPrice = "8000000000";
     try {
       gasPrice = await web3.eth.getGasPrice();
