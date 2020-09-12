@@ -147,21 +147,33 @@ class WithdrawModal extends Component {
               leftLabel={t("youCanWithdrawUpTo")}
               rightLabel={`${stream.funds.withdrawable.toLocaleString()} ${stream.token.symbol}`}
             />
+            <div className={classnames("dashed-line", "withdraw-modal__dashed-line")}>
+              <span className="dashed-line__left-label">{t("youCanWithdrawUpTo")}</span>
+              <span className="dashed-line__right-label">
+                {roundToDecimalPoints(amountToWithdraw, 3)} {stream.token.symbol}
+              </span>
+            </div>
+            <div className="withdraw-modal__slidercontainer">
+                <Slider
+                  className="withdraw-modal__slider"
+                  defaultValue={amountToWithdraw}
+                  disabled={disabled}
+                  max={stream.funds.withdrawable}
+                  min={sliderStep}
+                  onChange={value => this.setState({ amountToWithdraw: value })}
+                  step={sliderStep}
+                  value={amountToWithdraw}
+                />
+                <span onClick={() => this.setState({
+                    amountToWithdraw: stream.funds.withdrawable
+                })}>{t("setMax")}</span>
+            </div>
           </div>
-          <Slider
-            className="withdraw-modal__slider"
-            defaultValue={amountToWithdraw}
-            disabled={disabled}
-            max={stream.funds.withdrawable}
-            min={sliderStep}
-            onChange={value => this.setState({ amountToWithdraw: value })}
-            step={sliderStep}
-          />
           <PrimaryButton
             className={classnames(["withdraw-modal__button", "primary-button--yellow"])}
             disabled={disabled}
             disabledWhileLoading
-            label={`${t("withdraw.verbatim")} ${roundToDecimalPoints(amountToWithdraw, 3)} ${stream.token.symbol}`}
+            label={`${t("withdraw.verbatim")}`}
             loading={hasPendingTransactions}
             onClick={() =>
               this.setState({ submissionError: "" }, () => {

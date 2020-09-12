@@ -42,6 +42,20 @@
   &__title-label {
     @extend %frame-title-label;
   }
+
+  &__slidercontainer {
+      display: flex;
+      flex-direction: row;
+
+    span {
+        color: $sablier-orange;
+        text-decoration: underline;
+        padding-top: 20px;
+        cursor: pointer;
+        flex-basis: 15%;
+        text-align: right;
+    }
+  }
 }
 
 .rc-slider-disabled {
