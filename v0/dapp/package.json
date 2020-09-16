@@ -79,7 +79,7 @@
     "shx": "^0.3.2",
     "wsrun": "^3.6.4"
   },
-  "homepage": "https://beta.sablier.app",
+  "homepage": ".",
   "license": "LGPL-3.0",
   "private": true,
   "repository": {
