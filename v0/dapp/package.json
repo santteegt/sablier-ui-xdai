@@ -1,5 +1,6 @@
 {
   "name": "@sablier/dapp",
+  "homepage": ".",
   "description": "Money streaming dapp",
   "version": "0.0.1",
   "author": {
@@ -79,7 +80,6 @@
     "shx": "^0.3.2",
     "wsrun": "^3.6.4"
   },
-  "homepage": ".",
   "license": "LGPL-3.0",
   "private": true,
   "repository": {
