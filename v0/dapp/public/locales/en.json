@@ -125,7 +125,7 @@
   "stopTime": "Stop time",
   "streamed": "Streamed",
   "streamMoney": "Stream money",
-  "streamSuccess": "Ka-Ching! Stream successfully created!",
+  "streamSuccess": "Ka-Ching! Stream successfully created! Please wait to be redirectd to your stream.",
   "switchNetwork": "Please switch to {{ correctNetwork }}",
   "to": "To",
   "today": "Today",
