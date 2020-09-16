@@ -170,6 +170,7 @@ export const initialize = () => (dispatch, getState) => {
           },
           wallet: wallet => {
             const web3 = new Web3(wallet.provider)
+            window.localStorage.setItem('selectedWallet', wallet.name)
             dispatch({
               type: CONNECT_WALLET,
               payload: web3,
@@ -184,6 +185,10 @@ export const initialize = () => (dispatch, getState) => {
           ]
         }
       });
+      const selectedWallet = window.localStorage.getItem('selectedWallet');
+      if (selectedWallet) {
+        await onboard.walletSelect(selectedWallet)
+      }
       dispatch({ 
         type: INITIALIZE,
         payload: onboard
