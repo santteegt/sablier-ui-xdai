@@ -11,10 +11,10 @@ import { INTERVAL_MINUTES } from "../constants/time";
 export function getMinStartTime() {
   const now = dayjs();
   // const coefficient = 60 * INTERVAL_MINUTES.hour;
-  const coefficient = 1 * INTERVAL_MINUTES.minute;
+  const coefficient = 5 * INTERVAL_MINUTES.minute;
   let roundedTime = dayjs.unix(Math.ceil(now.unix() / coefficient) * coefficient);
-  if (now.add(7, "minute").isAfter(roundedTime)) {
-    roundedTime = roundedTime.add(coefficient, "second");
+  if (now.add(5, "minute").isAfter(roundedTime)) {
+    roundedTime = roundedTime.add(coefficient, "minute");
   }
   return roundedTime;
 }

@@ -149,7 +149,7 @@ class WithdrawModal extends Component {
               rightLabel={`${stream.funds.withdrawable.toLocaleString()} ${stream.token.symbol}`}
             />
             <div className={classnames("dashed-line", "withdraw-modal__dashed-line")}>
-              <span className="dashed-line__left-label">{t("youCanWithdrawUpTo")}</span>
+              <span className="dashed-line__left-label">{t("youWillWithdraw")}</span>
               <span className="dashed-line__right-label">
                 {roundToDecimalPoints(amountToWithdraw, 3)} {stream.token.symbol}
               </span>

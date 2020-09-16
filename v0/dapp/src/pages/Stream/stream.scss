@@ -50,6 +50,7 @@
     @extend %col-nowrap, %frame;
     width: 52%;
     height: 100%;
+    overflow-y: auto;
   }
 
   &__loader {
@@ -133,7 +134,7 @@
     height: 40%;
     align-items: center;
     justify-content: center;
-    padding: 32px 48px 32px 16px;
+    padding: 132px 48px 132px 16px;
   }
 }
 
