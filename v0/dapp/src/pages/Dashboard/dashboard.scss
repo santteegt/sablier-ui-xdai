@@ -2,6 +2,7 @@
 
 .dashboard {
   @extend %frame, %page-frame;
+  z-index: 0;
   height: auto;
   min-height: calc(100vh - 144px);
   bottom: auto;
@@ -33,6 +34,15 @@
     font-family: sans-serif;
     font-size: 20px;
     text-transform: capitalize;
+  }
+
+  &__no-wallet {
+    @extend %absolute-centered-tag;
+    color: $space-cadet-black;
+    font-family: sans-serif;
+    font-size: 20px;
+    text-transform: capitalize;
+    top: 55%;
   }
 
   &__plus-icon-container {
@@ -120,7 +130,7 @@
   align-items: center;
   justify-content: center;
   font-family: sans-serif;
-  font-size: 14px;
+  font-size: 12px;
 }
 
 .ReactTable .rt-tbody .rt-td {

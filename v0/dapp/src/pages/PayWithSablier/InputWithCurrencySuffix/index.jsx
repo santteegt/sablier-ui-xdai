@@ -72,13 +72,14 @@ class InputWithCurrencySuffix extends Component {
   }
 
   render() {
-    const { className, id, name, suffix, type } = this.props;
+    const { className, disabled, id, name, suffix, type } = this.props;
     const { label } = this.state;
 
     return (
       <input
         autoComplete="off"
         className={classnames(className)}
+        disabled={disabled}
         id={id}
         name={name}
         onChange={e => this.onChange(e)}
@@ -94,6 +95,7 @@ class InputWithCurrencySuffix extends Component {
 
 InputWithCurrencySuffix.propTypes = {
   className: PropTypes.string,
+  disabled: PropTypes.bool,
   id: PropTypes.string,
   name: PropTypes.string,
   onChange: PropTypes.func.isRequired,
@@ -103,6 +105,7 @@ InputWithCurrencySuffix.propTypes = {
 
 InputWithCurrencySuffix.defaultProps = {
   className: "",
+  disabled: false,
   id: "",
   name: "",
   type: "",

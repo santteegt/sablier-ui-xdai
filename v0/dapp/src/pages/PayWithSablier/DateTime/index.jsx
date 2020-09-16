@@ -98,13 +98,14 @@ class SablierDateTime extends Component {
   }
 
   render() {
-    const { className, inputClassName, name, placeholder, selectedTime, t } = this.props;
+    const { className, disabled, inputClassName, name, placeholder, selectedTime, t } = this.props;
 
     return (
       <div className={classnames("sablier-datetime", className)}>
         <input
           autoComplete="off"
           className={classnames("sablier-datetime__input", inputClassName)}
+          disabled={disabled}
           id={name}
           name={name}
           onFocus={() => this.setState({ showModal: true })}
@@ -121,6 +122,7 @@ class SablierDateTime extends Component {
 
 SablierDateTime.propTypes = {
   className: PropTypes.string,
+  disabled: PropTypes.bool,
   inputClassName: PropTypes.string,
   interval: PropTypes.string.isRequired,
   maxTime: PropTypes.shape({
@@ -145,6 +147,7 @@ SablierDateTime.propTypes = {
 
 SablierDateTime.defaultProps = {
   className: "",
+  disabled: false,
   inputClassName: "",
   maxTime: null,
   minTime: null,

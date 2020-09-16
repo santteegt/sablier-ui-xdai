@@ -51,7 +51,7 @@ class RedeemModal extends Component {
     try {
       gasPrice = await web3.eth.getGasPrice();
       gasPrice = BN(gasPrice || "0")
-        .plus(BN("1000000000"))
+        // .plus(BN("1000000000"))
         .toString();
       // eslint-disable-next-line no-empty
     } catch {}

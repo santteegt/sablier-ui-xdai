@@ -47,7 +47,7 @@ class WithdrawModal extends Component {
     const { hasPendingTransactions, onWithdrawSuccess } = this.props;
     const { amountToWithdraw, submitted, submissionError } = this.state;
     if (submitted && !submissionError && !hasPendingTransactions) {
-      onWithdrawSuccess(amountToWithdraw);
+      onWithdrawSuccess(Math.ceil(amountToWithdraw * 100) / 100);
     }
   }
 
@@ -61,15 +61,16 @@ class WithdrawModal extends Component {
     const { account, addPendingTx, payrollAddress, /*sablierAddress,*/ stream, web3 } = this.props;
     const { amountToWithdraw } = this.state;
 
-    const effectiveWithdraw = amountToWithdraw > stream.funds.withdrawable ? stream.funds.withdrawable:amountToWithdraw;
-    let adjustedAmount = new BN(effectiveWithdraw).multipliedBy(10 ** stream.token.decimals).toFixed(0);
+    // const effectiveWithdraw = amountToWithdraw > stream.funds.withdrawable ? stream.funds.withdrawable:amountToWithdraw;
+    // let adjustedAmount = new BN(effectiveWithdraw).multipliedBy(10 ** stream.token.decimals).toFixed(0);
+    let adjustedAmount = new BN(amountToWithdraw).multipliedBy(10 ** stream.token.decimals).toFixed(0);
     adjustedAmount = new web3.utils.BN(adjustedAmount.toString());
     // console.log('adjustedAmount', adjustedAmount.toString())
     let gasPrice = "8000000000";
     try {
       gasPrice = await web3.eth.getGasPrice();
       gasPrice = BN(gasPrice || "0")
-        .plus(BN("1000000000"))
+        // .plus(BN("1000000000"))
         .toString();
       // eslint-disable-next-line no-empty
     } catch {}

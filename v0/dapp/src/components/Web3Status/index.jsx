@@ -24,10 +24,15 @@ class Web3Status extends Component {
   }
 
   onClick = () => {
-    const { pending } = this.props;
+    const { isConnected, onboard, pending } = this.props;
     const { showModal } = this.state;
-    if (pending.length && !showModal) {
+    if (!isConnected) {
+      onboard.walletSelect();
+    } else if (pending.length && !showModal) {
       this.setState({ showModal: true });
+    } else {
+      // TODO: Open wallet
+      // onboard.walletCheck();
     }
   };
 
@@ -92,7 +97,7 @@ class Web3Status extends Component {
   renderLabel(text) {
     const { t } = this.props;
     if (!text || text.length < 42 || !isHexStrict(text)) {
-      return <span className="web3-status__label">{t("disconnected")}</span>;
+      return <span className="web3-status__label">{t("connect")}</span>;
     }
 
     const address = toChecksumAddress(text);
@@ -151,6 +156,7 @@ Web3Status.propTypes = {
   // confirmed: PropTypes.shape([]),
   confirmed: PropTypes.array,
   isConnected: PropTypes.bool,
+  onboard: PropTypes.object,
   // pending: PropTypes.shape([]),
   pending: PropTypes.array,
   // t: PropTypes.shape({}),
@@ -158,9 +164,10 @@ Web3Status.propTypes = {
 };
 
 Web3Status.defaultProps = {
-  address: "Disconnected",
+  address: "Connect",
   confirmed: [],
   isConnected: false,
+  onboard: null,
   pending: [],
   // t: {},
 };
@@ -171,6 +178,7 @@ export default connect(state => {
     confirmed: state.web3connect.transactions.confirmed,
     // eslint-disable-next-line eqeqeq
     isConnected: !!state.web3connect.account && state.web3connect.networkId == (process.env.REACT_APP_NETWORK_ID || 1),
+    onboard: state.web3connect.onboard,
     pending: state.web3connect.transactions.pending,
   };
 })(withTranslation()(Web3Status));

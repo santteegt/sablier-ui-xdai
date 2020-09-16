@@ -11,6 +11,8 @@ import PrimaryButton from "../../../components/PrimaryButton";
 import StreamFlow from "../../../classes/stream/flow";
 import StreamStatus from "../../../classes/stream/status";
 
+const EPSILON = 1e-16;
+
 const LastPanelButton = props => {
   const { onClickRedeem, onClickWithdraw, stream, t } = props;
 
@@ -22,7 +24,7 @@ const LastPanelButton = props => {
     if ([StreamStatus.CREATED.name, StreamStatus.ACTIVE.name, StreamStatus.ENDED.name].includes(stream.status)) {
       callback = onClickWithdraw;
       icon = FaInboxOut;
-      label = stream.funds.withdrawable > 0 ? t("withdraw.verbatim"):t("withdraw.empty");
+      label = stream.funds.withdrawable > EPSILON ? t("withdraw.verbatim"):t("withdraw.empty");
     } else {
       return null;
     }
@@ -43,7 +45,7 @@ const LastPanelButton = props => {
         icon={icon}
         label={label}
         onClick={() => callback()}
-        disabled={stream.flow === StreamFlow.IN.name && stream.funds.withdrawable === 0}
+        disabled={stream.flow === StreamFlow.IN.name && stream.funds.withdrawable <= EPSILON}
       />
     </div>
   );

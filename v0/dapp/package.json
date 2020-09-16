@@ -24,6 +24,7 @@
     "apollo-link-ws": "^1.0.17",
     "bignumber.js": "^8.1.1",
     "bitap": "^1.0.1",
+    "bnc-onboard": "^1.13.0",
     "bootstrap": "^4.3.1",
     "classnames": "^2.2.6",
     "connected-react-router": "^6.5.2",

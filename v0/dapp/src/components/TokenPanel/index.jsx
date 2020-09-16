@@ -153,15 +153,16 @@ class TokenPanel extends Component {
 
   renderPanel() {
     const { selectedTokenAddress, t, tokenSymbol } = this.props;
+    const { web3 } = this.props;
 
     return (
       <div
         className="token-panel__input-container"
         onClick={() => {
-          this.setState({ isShowingModal: true });
+          this.setState({ isShowingModal: web3 ? true:false });
         }}
         onKeyDown={() => {
-          this.setState({ isShowingModal: true });
+          this.setState({ isShowingModal: web3 ? true:false });
         }}
         role="button"
         tabIndex={0}

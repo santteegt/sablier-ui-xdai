@@ -2,6 +2,7 @@
 import React, { Component } from "react";
 import dayjs from "dayjs";
 import PropTypes from "prop-types";
+import Onboard from 'bnc-onboard'
 import Web3 from "web3";
 
 import { connect } from "react-redux";
@@ -14,6 +15,7 @@ export const ADD_CONFIRMED_TX = "web3connect/addConfirmedTx";
 export const ADD_CONTRACT = "web3connect/addContract";
 export const ADD_PENDING_TX = "web3connect/addPendingTx";
 export const INITIALIZE = "web3connect/initialize";
+export const CONNECT_WALLET = "web3connect/connectWallet";
 export const REMOVE_PENDING_TX = "web3connect/removePendingTx";
 export const UPDATE_ETH_BALANCE = "web3connect/updateEthBalance";
 export const UPDATE_TOKEN_BALANCE = "web3connect/updateTokenBalance";
@@ -43,6 +45,7 @@ const initialState = {
   },
   contracts: {},
   initialized: false,
+  onboard: null,
   networkId: 0,
   transactions: {
     pending: [],
@@ -131,36 +134,75 @@ export const initialize = () => (dispatch, getState) => {
           transactionConfirmationBlocks: 1,
         };
 
-    if (typeof window.ethereum !== "undefined") {
-      try {
-        const web3 = new Web3(window.ethereum, null, options);
-        await window.ethereum.enable();
-        dispatch({
-          type: INITIALIZE,
-          payload: web3,
-        });
-        resolve(web3);
-        return;
-      } catch (error) {
-        console.error("User denied access.", error);
-        dispatch({ type: INITIALIZE });
-        reject();
-        return;
-      }
+    // if (typeof window.ethereum !== "undefined") {
+    //   try {
+    //     const web3 = new Web3(window.ethereum, null, options);
+    //     await window.ethereum.enable();
+    //     dispatch({
+    //       type: INITIALIZE,
+    //       payload: web3,
+    //     });
+    //     resolve(web3);
+    //     return;
+    //   } catch (error) {
+    //     console.error("User denied access.", error);
+    //     dispatch({ type: INITIALIZE });
+    //     reject();
+    //     return;
+    //   }
+    // }
+    if (!process.env.REACT_APP_ONBOARD_API_KEY || !process.env.REACT_APP_NETWORK_ID) {
+      console.error("Onboard: NO API KEY NOR NETWORK ID");
+      dispatch({ type: INITIALIZE });
+      reject();
     }
 
-    if (typeof window.web3 !== "undefined") {
-      const web3 = new Web3(window.web3.currentProvider, null, options);
-      dispatch({
-        type: INITIALIZE,
-        payload: web3,
+    if (!web3connect.onboard) {
+      const onboard = Onboard({
+        dappId: process.env.REACT_APP_ONBOARD_API_KEY,       // [String] The API key created by step one above
+        networkId: parseInt(process.env.REACT_APP_NETWORK_ID),  // [Integer] The Ethereum network ID your Dapp uses.
+        subscriptions: {
+          address: address => {
+
+          },
+          network: network => {
+
+          },
+          wallet: wallet => {
+            const web3 = new Web3(wallet.provider)
+            dispatch({
+              type: CONNECT_WALLET,
+              payload: web3,
+            });
+          },
+        },
+        walletSelect: {
+          wallets: [
+            { walletName: 'metamask', preferred: true },
+            { walletName: 'walletConnect', preferred: true, rpc: { '100': 'https://xdai.poanetwork.dev'} },
+            { walletName: 'dapper', preferred: true },
+          ]
+        }
       });
-      resolve(web3);
-      return;
+      dispatch({ 
+        type: INITIALIZE,
+        payload: onboard
+      });
     }
 
-    dispatch({ type: INITIALIZE });
-    reject();
+    // DEPRECATED
+    // if (typeof window.web3 !== "undefined") {
+    //   const web3 = new Web3(window.web3.currentProvider, null, options);
+    //   dispatch({
+    //     type: INITIALIZE,
+    //     payload: web3,
+    //   });
+    //   resolve(web3);
+    //   return;
+    // }
+
+    // dispatch({ type: INITIALIZE });
+    // reject();
   });
 };
 
@@ -297,8 +339,8 @@ export const sync = () => async (dispatch, getState) => {
       return;
     }
 
-    const contract = contracts[tokenAddress] || new web3.eth.Contract(ERC20_ABI, tokenAddress);
-    const contractBytes32 = contracts[tokenAddress] || new web3.eth.Contract(ERC20_WITH_BYTES_ABI, tokenAddress);
+    const contract = contracts[tokenAddress] || new web3.eth.Contract(ERC20_ABI, web3.utils.toChecksumAddress(tokenAddress));
+    const contractBytes32 = contracts[tokenAddress] || new web3.eth.Contract(ERC20_WITH_BYTES_ABI, web3.utils.toChecksumAddress(tokenAddress));
 
     if (!contracts[tokenAddress]) {
       dispatch({
@@ -467,9 +509,14 @@ export default function web3connectReducer(state = initialState, { type, payload
     case INITIALIZE:
       return {
         ...state,
-        web3: payload,
+        onboard: payload,
         initialized: true,
       };
+    case CONNECT_WALLET:
+      return {
+        ...state,
+        web3: payload,
+      }
     case REMOVE_PENDING_TX:
       return {
         ...state,

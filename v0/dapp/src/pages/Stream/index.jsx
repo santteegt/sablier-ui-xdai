@@ -466,7 +466,7 @@ class Stream extends Component {
   }
 
   render() {
-    const { account, block, match, t } = this.props;
+    const { account, block, isConnected, match, t } = this.props;
     // const streamId = `${account.toLowerCase()}/${match.params.rawStreamId}`;
     const streamId = `${match.params.rawStreamId}`;
 
@@ -482,7 +482,12 @@ class Stream extends Component {
           // console.log('selected stream', data)
           if (loading && !data.proxyStream) return <Loader className="stream__loader" delay={100} />;
           if (error) return <div className="stream__no-data">{t("error")}</div>;
-          if (!account || !data || !data.proxyStream) return <div className="stream__no-data">{t("noData")}</div>;
+          if (!account || !data || !data.proxyStream) return (
+            <>
+              <div className="stream__no-data">{t("noData")}</div>
+              {!isConnected && (<div className="stream__no-wallet">{t("connectwallet")}</div>)}
+            </>
+          )
 
           const parser = new Parser(data.proxyStream, account, block, t);
           const stream = parser.parse();

@@ -53,9 +53,9 @@ class App extends Component {
     if (initialized && web3 && this.hasSetNetworkId && !hasCorrectNetworkId) {
       return <NetworkModal />;
     }
-    if (initialized && !web3) {
-      return <WalletModal />;
-    }
+    // if (initialized && !web3) {
+    //   return <WalletModal />;
+    // }
     return null;
   }
 

@@ -2,6 +2,7 @@
 
 .pay-with-sablier {
   @extend %frame, %row-nowrap;
+  z-index: 0;
   width: calc(100vw - 240px);
   height: calc(100vh - 240px);
   bottom: 96px;

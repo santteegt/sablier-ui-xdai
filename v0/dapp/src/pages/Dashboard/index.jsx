@@ -112,7 +112,7 @@ class Dashboard extends Component {
             Cell: row => {
               return (
                 <div className="dashboard__cell__label">
-                  {Math.round(row.value)} {row.original.token.symbol}
+                  {Math.ceil(row.value * 100) / 100} {row.original.token.symbol}
                 </div>
               );
             },
@@ -186,7 +186,7 @@ class Dashboard extends Component {
   }
 
   render() {
-    const { account, t } = this.props;
+    const { account, isConnected, t } = this.props;
     return (
       <div className="dashboard">
         <div className="dashboard__title-label">{t("dashboard")}</div>
@@ -201,7 +201,12 @@ class Dashboard extends Component {
                 {!loading ? null : <Loader className="dashboard__loader" delay={100} />}
                 {!error ? null : <div className="dashboard__no-data">{t("error")}</div>}
                 {loading || (data && data.proxyStreams && data.proxyStreams.length !== 0) ? null : (
-                  <div className="dashboard__no-data">{t("noData")}</div>
+                  <>
+                    <div className="dashboard__no-data">{t("noData")}</div>
+                    {!isConnected && (
+                      <div className="dashboard__no-wallet">{t("connectwallet")}</div>
+                    )}
+                  </>
                 )}
                 {this.renderTable(data.proxyStreams || [])}
               </div>
@@ -219,6 +224,7 @@ Dashboard.propTypes = {
     number: PropTypes.object.isRequired,
     timestamp: PropTypes.object.isRequired,
   }),
+  isConnected: PropTypes.bool.isRequired,
   push: PropTypes.func.isRequired,
   // t: PropTypes.shape({}),
   t: PropTypes.func,
@@ -227,6 +233,7 @@ Dashboard.propTypes = {
 Dashboard.defaultProps = {
   account: "",
   block: {},
+  isConnected: false,
   t: {},
 };
 
@@ -234,6 +241,7 @@ export default connect(
   state => ({
     account: state.web3connect.account,
     block: state.web3connect.block,
+    isConnected: !!state.web3connect.account && state.web3connect.networkId == (process.env.REACT_APP_NETWORK_ID || 1),
   }),
   dispatch => ({
     push: path => dispatch(routerPush(path)),

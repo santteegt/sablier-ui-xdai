@@ -121,8 +121,8 @@ export class Parser {
   parseAddresses() {
     const { proxyStream, flow, translations } = this;
     // const { flow, rawStream } = proxyStream;
-    const { stream } = proxyStream;
-    const { recipient, sender } = stream;
+    const { sender, /*stream,*/ recipient } = proxyStream;
+    // const { recipient, sender } = stream;
 
     if (flow === StreamFlow.IN.name) {
       return {
@@ -190,7 +190,7 @@ export class Parser {
         break;
       case StreamStatus.REDEEMED.name:
         // const redemptionBlockNumber = rawStream.txs[rawStream.txs.length - 1].block;
-        const redemptionBlockNumber = stream.txs[0].timestamp;
+        const redemptionBlockNumber = stream.txs[stream.txs.length - 1].timestamp;
         const redemptionBlockNumberBN = new BN(redemptionBlockNumber);
         // if (redemptionBlockNumberBN.isLessThanOrEqualTo(startBlock)) {
         if (redemptionBlockNumberBN.isLessThanOrEqualTo(startTime)) {
@@ -218,7 +218,7 @@ export class Parser {
     // const paidBN = blockDeltaBN.dividedBy(interval).multipliedBy(payment);
     // const paidBN = blockDeltaBN.dividedBy(ratePerSecond).multipliedBy(deposit);
     const paidSoFar = blockDeltaBN.multipliedBy(ratePerSecond);
-    const paidBN = paidSoFar.minus(paidSoFar.mod(blockDeltaBN)) || new BN(0);
+    const paidBN = blockDeltaBN.isGreaterThan(new BN(0)) ? (paidSoFar.minus(paidSoFar.mod(blockDeltaBN)) || new BN(0)):paidSoFar;
     // console.log('paidBN', paidBN.toString())
     // const paidBN = blockDeltaBN.multipliedBy(ratePerSecond);
     const paidValue = getUnitValue(paidBN, token.decimals);
@@ -269,7 +269,7 @@ export class Parser {
       .replace(`1 ${translations("hour")}`, translations("hour"))
       .replace(`1 ${translations("min")}`, translations("min"));
     // return `${payment} ${rawStream.token.symbol}/ ${formattedInterval.toLowerCase()}`;
-    return `${Math.round(payment)} ${stream.token.symbol}/ ${formattedInterval.toLowerCase()}`;
+    return `${Math.ceil(payment * 100) / 100} ${stream.token.symbol}/ ${formattedInterval.toLowerCase()}`;
   }
 
   parseRedemption() {

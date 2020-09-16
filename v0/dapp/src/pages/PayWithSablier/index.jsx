@@ -9,11 +9,12 @@ import { isAddress } from "web3-utils";
 import { push as routerPush } from "connected-react-router";
 import { withApollo } from "react-apollo";
 import { withTranslation } from "react-i18next";
-
+import FaShieldCheck from "../../assets/images/fa-shield-check.svg";
 import DashedLine from "../../components/DashedLine";
 // import FaExclamationMark from "../../assets/images/fa-exclamation-mark.svg";
 import InputWithCurrencySuffix from "./InputWithCurrencySuffix";
 import IntervalPanel from "./IntervalPanel";
+import ModalWithImage from "../../components/ModalWithImage";
 import PrimaryButton from "../../components/PrimaryButton";
 // import SablierABI from "../../abi/sablier";
 import PayrollABI from "../../abi/payroll";
@@ -45,6 +46,7 @@ const initialState = {
   recipient: "",
   tokenAddress: "",
   tokenSymbol: DEFAULT_TOKEN_SYMBOL,
+  showSuccessModal: false,
   showTokenApprovalModal: false,
   startTime: undefined,
   stopTime: undefined,
@@ -161,7 +163,7 @@ class PayWithSablier extends Component {
     try {
       gasPrice = await web3.eth.getGasPrice();
       gasPrice = BN(gasPrice || "0")
-        .plus(BN("1000000000"))
+        // .plus(BN("1000000000"))
         .toString();
       // eslint-disable-next-line no-empty
     } catch {}
@@ -170,6 +172,8 @@ class PayWithSablier extends Component {
     //   (new web3.utils.BN(startTime_.toString(10))).toString(), (new web3.utils.BN(stopTime_.toString(10)).toString()))
 
     let payrollContract = new web3.eth.Contract(PayrollABI, payrollAddress);
+
+    const currentTime = Math.round(new Date().getTime()/1000);
 
     payrollContract.methods
       .createSalary(
@@ -196,9 +200,14 @@ class PayWithSablier extends Component {
             payrollContract.events.CreateSalary({
               filter: {company: account}
             }, (error, event) => {
-              // if(error) console.log('EVENT error', error)
-              // console.log('EVENT', error, event)
-              push(`/stream/${event.returnValues.salaryId}`);
+              if(error) {
+                console.log('EVENT error', error)
+                this.handleError(error)
+              } else {
+                // console.log(event)
+                this.setState({ showSuccessModal: true });
+                setTimeout(() => this.subscribeToRawStreamId(currentTime), 5000);
+              }
             })
           })
           .once("error", err => {
@@ -315,20 +324,25 @@ class PayWithSablier extends Component {
     this.setState(initialState);
   }
 
-  subscribeToRawStreamId() {
-    const { account, block, client, push, t } = this.props;
+  subscribeToRawStreamId(timestamp) {
+    const { account, /*block,*/ client, push, t } = this.props;
 
     // eslint-disable-next-line max-len
     // @see https://stackoverflow.com/questions/45113394/how-do-i-create-a-graphql-subscription-with-apollo-client-in-vanilla-js
+    // this.fetchSubscribedStream(client, push, t, timestamp, account.toLowerCase());
     this.subscriptionObserver = client
       .subscribe({
         query: GET_LAST_RAW_STREAM,
-        variables: { blockNumber: block.number.toNumber(), sender: account.toLowerCase() },
+        // variables: { blockNumber: block.number.toNumber(), sender: account.toLowerCase() },
+        variables: { timestamp, sender: account.toLowerCase() },
       })
       .subscribe({
         next({ data }) {
-          if (data && data.rawStreams) {
-            push(`/stream/${data.rawStreams[0].id}`);
+          console.log('data', data, timestamp)
+          if (data && data.proxyStreams && data.proxyStreams.length) {
+            push(`/stream/${data.proxyStreams[0].id}`);
+          } else {
+            console.log('subgraph took too long to sync...')
           }
         },
         error(_err) {
@@ -487,7 +501,7 @@ class PayWithSablier extends Component {
   }
 
   renderTimes() {
-    const { t } = this.props;
+    const { isConnected, t } = this.props;
     const { interval, minTime, startTime, stopTime } = this.state;
 
     const minutes = getMinutesForInterval(interval).toNumber();
@@ -504,6 +518,7 @@ class PayWithSablier extends Component {
         <div className="pay-with-sablier__horizontal-container">
           <SablierDateTime
             className={classnames("pay-with-sablier__input-container-halved")}
+            disabled={!isConnected}
             inputClassName={classnames("pay-with-sablier__input", {
               "pay-with-sablier__input--invalid": this.isTimesInvalid(),
             })}
@@ -519,6 +534,7 @@ class PayWithSablier extends Component {
           />
           <SablierDateTime
             className={classnames("pay-with-sablier__input-container-halved")}
+            disabled={!isConnected}
             inputClassName={classnames("pay-with-sablier__input", {
               "pay-with-sablier__input--invalid": this.isTimesInvalid(),
             })}
@@ -545,7 +561,7 @@ class PayWithSablier extends Component {
   }
 
   renderRate() {
-    const { t } = this.props;
+    const { isConnected, t } = this.props;
     const { interval, tokenSymbol } = this.state;
 
     return (
@@ -565,6 +581,7 @@ class PayWithSablier extends Component {
               onChange={(value, label) => this.onChangePayment(value, label)}
               suffix={tokenSymbol}
               type="text"
+              disabled={!isConnected}
             />
           </div>
           <span className="pay-with-sablier__horizontal-container__separator">{t("per")}</span>
@@ -593,7 +610,7 @@ class PayWithSablier extends Component {
   }
 
   renderRecipient() {
-    const { t } = this.props;
+    const { isConnected, t } = this.props;
     const { recipient } = this.state;
 
     return (
@@ -607,6 +624,7 @@ class PayWithSablier extends Component {
             className={classnames("pay-with-sablier__input", {
               "pay-with-sablier__input--invalid": this.isRecipientInvalid(),
             })}
+            disabled={!isConnected}
             id="recipient"
             name="recipient"
             onChange={this.onChangeState.bind(this)}
@@ -632,7 +650,7 @@ class PayWithSablier extends Component {
   }
 
   renderReceipt() {
-    const { hasPendingTransactions, t } = this.props;
+    const { hasPendingTransactions, isConnected, t } = this.props;
     const { deposit, duration, submitted, submissionError, tokenSymbol } = this.state;
 
     const isDepositInvalid = this.isDepositInvalid();
@@ -663,8 +681,8 @@ class PayWithSablier extends Component {
         />*/}
         <PrimaryButton
           className={classnames("pay-with-sablier__button", "pay-with-sablier__receipt__deposit-button")}
-          disabled={isDepositInvalid}
-          label={t("streamMoney")}
+          disabled={!isConnected || isDepositInvalid}
+          label={t(isConnected ? "streamMoney":"connectwallet")}
           loading={hasPendingTransactions && submitted}
           onClick={() =>
             this.setState(
@@ -713,11 +731,25 @@ class PayWithSablier extends Component {
   }
 
   render() {
+    const { t } = this.props;
+    const { showSuccessModal } = this.state;
     return (
       <div className="pay-with-sablier">
         {this.renderForm()}
         {this.renderReceipt()}
         {this.renderTokenApprovalModal()}
+        {showSuccessModal && (
+          <ModalWithImage
+            buttonLabel={t("okay")}
+            image={FaShieldCheck}
+            label={t("streamSuccess")}
+            onClose={() =>
+              this.setState({
+                showSuccessModal: false,
+              })
+            }
+          />
+        )}
       </div>
     );
   }
