@@ -13,7 +13,7 @@ import Header from "./components/Header";
 import NetworkModal from "./components/NetworkModal";
 import PayWithSablier from "./pages/PayWithSablier";
 import Stream from "./pages/Stream";
-import WalletModal from "./components/WalletModal";
+// import WalletModal from "./components/WalletModal";
 
 import { history } from "./redux/store";
 import { setAddresses as web3SetAddresses } from "./redux/ducks/addresses";

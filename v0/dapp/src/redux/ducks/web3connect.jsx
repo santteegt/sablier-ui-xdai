@@ -128,11 +128,11 @@ export const initialize = () => (dispatch, getState) => {
     }
 
     // @see https://github.com/ethereum/web3.js/issues/2601#issuecomment-493752483
-    const options = !process.env.REACT_APP_NETWORK_ID
-      ? {}
-      : {
-          transactionConfirmationBlocks: 1,
-        };
+    // const options = !process.env.REACT_APP_NETWORK_ID
+    //   ? {}
+    //   : {
+    //       transactionConfirmationBlocks: 1,
+    //     };
 
     // if (typeof window.ethereum !== "undefined") {
     //   try {

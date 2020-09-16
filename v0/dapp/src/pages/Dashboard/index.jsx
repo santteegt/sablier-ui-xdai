@@ -241,7 +241,7 @@ export default connect(
   state => ({
     account: state.web3connect.account,
     block: state.web3connect.block,
-    isConnected: !!state.web3connect.account && state.web3connect.networkId == (process.env.REACT_APP_NETWORK_ID || 1),
+    isConnected: !!state.web3connect.account && state.web3connect.networkId === (process.env.REACT_APP_NETWORK_ID || 100),
   }),
   dispatch => ({
     push: path => dispatch(routerPush(path)),

@@ -131,7 +131,7 @@ class PayWithSablier extends Component {
   }
 
   async onSubmit(checkedAllowance) {
-    const { account, addPendingTx, balances, payrollAddress, push, /*sablierAddress,*/ t, web3 } = this.props;
+    const { account, addPendingTx, balances, payrollAddress, /*push, sablierAddress,*/ t, web3 } = this.props;
     const { recipient, startTime, stopTime, tokenAddress, } = this.state;
 
     if (
