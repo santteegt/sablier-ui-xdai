@@ -27,12 +27,11 @@ class Web3Status extends Component {
     const { isConnected, onboard, pending } = this.props;
     const { showModal } = this.state;
     if (!isConnected) {
-      onboard.walletSelect();
+      onboard.walletSelect().then(success => onboard.walletCheck());
     } else if (pending.length && !showModal) {
       this.setState({ showModal: true });
     } else {
       // TODO: Open wallet
-      // onboard.walletCheck();
     }
   };
 
