@@ -1,3 +1,4 @@
+import HoneyTokens from "honeyswap-default-token-list";
 import { MAINNET, RINKEBY, LOCAL, XDAI } from "../../constants/addresses";
 
 const SET_ADDRESSES = "app/addresses/setAddresses";
@@ -22,11 +23,19 @@ export const setAddresses = networkId => {
       };
     // xDAI
     case 100:
-    case "100":
+    case "100": {
+      let tokens = HoneyTokens.tokens.filter(token => token.chainId === 100);
+      XDAI.tokenAddresses.addresses.push(...tokens.map(token => [token.symbol, token.address, token.logoURI]));
+      XDAI.tokenAddressesToSymbols = Object.assign(XDAI.tokenAddressesToSymbols, ...tokens.map(token => {
+        const addToSymbol = {};
+        addToSymbol[token.address] = token.symbol;
+        return addToSymbol;
+      }))
       return {
         type: SET_ADDRESSES,
         payload: XDAI,
       };
+    }
     // Local
     case 8995:
     case "8995":

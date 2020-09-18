@@ -72,7 +72,7 @@ class InputWithCurrencySuffix extends Component {
   }
 
   render() {
-    const { className, disabled, id, name, suffix, type } = this.props;
+    const { className, clean, disabled, id, name, suffix, type } = this.props;
     const { label } = this.state;
 
     return (
@@ -87,7 +87,7 @@ class InputWithCurrencySuffix extends Component {
         placeholder={`0 ${suffix}`}
         spellCheck={false}
         type={type || "text"}
-        value={label}
+        value={clean ? "":label}
       />
     );
   }
@@ -95,6 +95,7 @@ class InputWithCurrencySuffix extends Component {
 
 InputWithCurrencySuffix.propTypes = {
   className: PropTypes.string,
+  clean: PropTypes.bool,
   disabled: PropTypes.bool,
   id: PropTypes.string,
   name: PropTypes.string,
@@ -105,6 +106,7 @@ InputWithCurrencySuffix.propTypes = {
 
 InputWithCurrencySuffix.defaultProps = {
   className: "",
+  clean: false,
   disabled: false,
   id: "",
   name: "",

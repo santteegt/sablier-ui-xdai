@@ -54,8 +54,8 @@ class TokenPanel extends Component {
     const tokenList = [];
 
     for (let i = 0; i < tokens.length; i += 1) {
-      const entry = { value: "", label: "" };
-      [entry.value, entry.address] = tokens[i];
+      const entry = { value: "", label: "", logoURI: undefined };
+      [entry.value, entry.address, entry.logoURI] = tokens[i];
       entry.label = entry.value;
       tokenList.push(entry);
     }
@@ -94,7 +94,7 @@ class TokenPanel extends Component {
       );
     }
 
-    return results.map(({ label, address }) => {
+    return results.map(({ label, address, logoURI }) => {
       const isSelected = selectedTokens.indexOf(address) > -1;
 
       return (
@@ -108,7 +108,7 @@ class TokenPanel extends Component {
           role="button"
           tabIndex={0}
         >
-          <TokenLogo className="token-modal__token-logo" address={address} />
+          <TokenLogo className="token-modal__token-logo" address={address} defaultTokenLogo={"🤑"} logoURI={logoURI} />
           <div className="token-modal__token-logo">{label}</div>
         </div>
       );
@@ -155,6 +155,8 @@ class TokenPanel extends Component {
     const { selectedTokenAddress, t, tokenSymbol } = this.props;
     const { web3 } = this.props;
 
+    const token = this.createTokenList().find(token => token.address === selectedTokenAddress);
+    
     return (
       <div
         className="token-panel__input-container"
@@ -173,7 +175,7 @@ class TokenPanel extends Component {
           })}
         >
           {selectedTokenAddress ? (
-            <TokenLogo className="token-panel__selected-token-logo" address={selectedTokenAddress} defaultTokenLogo="🤑" />
+            <TokenLogo className="token-panel__selected-token-logo" address={selectedTokenAddress} defaultTokenLogo="🤑" logoURI={token.logoURI} />
           ) : null}
           <span>{tokenSymbol || t("selectToken")}</span>
         </div>

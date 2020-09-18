@@ -22,7 +22,7 @@ import SablierDateTime from "./DateTime";
 import TokenApprovalModal from "../../components/TokenApprovalModal";
 import TokenPanel from "../../components/TokenPanel";
 
-import { ACCEPTED_TOKENS, DEFAULT_TOKEN_SYMBOL } from "../../constants/addresses";
+import { /*ACCEPTED_TOKENS,*/ DEFAULT_TOKEN_SYMBOL } from "../../constants/addresses";
 import {
   addPendingTx as web3AddPendingTx,
   selectors as web3Selectors,
@@ -116,7 +116,7 @@ class PayWithSablier extends Component {
     watchBalance({ balanceOf: account, tokenAddress });
     watchApprovals({ spender: sablierAddress, tokenAddress, tokenOwner: account });
     const tokenSymbol = tokenAddressesToSymbols[tokenAddress];
-    this.setState({ tokenAddress, tokenSymbol });
+    this.setState({ tokenAddress, tokenSymbol, payment: null });
   }
 
   getEffectiveDeposit() {
@@ -355,12 +355,12 @@ class PayWithSablier extends Component {
   }
 
   isTokenInvalid() {
-    const { t } = this.props;
-    const { tokenSymbol } = this.state;
+    // const { t } = this.props;
+    // const { tokenSymbol } = this.state;
 
-    if (!ACCEPTED_TOKENS.includes(tokenSymbol)) {
-      return t("errors.tokenNotAccepted");
-    }
+    // if (!ACCEPTED_TOKENS.includes(tokenSymbol)) {
+    //   return t("errors.tokenNotAccepted");
+    // }
 
     return false;
   }
@@ -368,6 +368,10 @@ class PayWithSablier extends Component {
   isPaymentInvalid() {
     const { account, balances, t } = this.props;
     const { deposit, payment, paymentLabel, submitted, tokenAddress, tokenSymbol } = this.state;
+
+    if (!payment) {
+      return false;
+    }
 
     const paymentStr = paymentLabel.replace(" ", "").replace(tokenSymbol, "");
     const parts = paymentStr.split(".");
@@ -562,7 +566,7 @@ class PayWithSablier extends Component {
 
   renderRate() {
     const { isConnected, t } = this.props;
-    const { interval, tokenSymbol } = this.state;
+    const { interval, payment, tokenSymbol } = this.state;
 
     return (
       <div className="pay-with-sablier__form-item">
@@ -582,6 +586,7 @@ class PayWithSablier extends Component {
               suffix={tokenSymbol}
               type="text"
               disabled={!isConnected}
+              clean={!payment}
             />
           </div>
           <span className="pay-with-sablier__horizontal-container__separator">{t("per")}</span>
@@ -651,7 +656,7 @@ class PayWithSablier extends Component {
 
   renderReceipt() {
     const { hasPendingTransactions, isConnected, t } = this.props;
-    const { deposit, duration, submitted, submissionError, tokenSymbol } = this.state;
+    const { deposit, duration, recipient, stopTime, submitted, submissionError, tokenSymbol } = this.state;
 
     const isDepositInvalid = this.isDepositInvalid();
     return (
@@ -681,7 +686,7 @@ class PayWithSablier extends Component {
         />*/}
         <PrimaryButton
           className={classnames("pay-with-sablier__button", "pay-with-sablier__receipt__deposit-button")}
-          disabled={!isConnected || isDepositInvalid}
+          disabled={!isConnected || isDepositInvalid || (!stopTime || !recipient || deposit === 0)}
           label={t(isConnected ? "streamMoney":"connectwallet")}
           loading={hasPendingTransactions && submitted}
           onClick={() =>

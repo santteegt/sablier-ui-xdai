@@ -19,7 +19,7 @@ class TokenLogo extends Component {
   }
 
   render() {
-    const { address, size, className, defaultTokenLogo } = this.props;
+    const { address, logoURI, size, className, defaultTokenLogo } = this.props;
     let path = "";
     const mainAddress = RINKEBY_TOKEN_MAP[address] ? RINKEBY_TOKEN_MAP[address] : address;
 
@@ -28,7 +28,9 @@ class TokenLogo extends Component {
     }
 
     const { error } = this.state;
-    if (!error && !BAD_IMAGES[mainAddress] && mainAddress !== "ETH") {
+    if (logoURI) {
+      path = logoURI
+    } else if (!error && !BAD_IMAGES[mainAddress] && mainAddress !== "ETH") {
       path = `${TOKEN_ICON_API}/${mainAddress.toLowerCase()}.png`;
     }
 
@@ -62,6 +64,7 @@ class TokenLogo extends Component {
 
 TokenLogo.propTypes = {
   address: PropTypes.string,
+  logoURI: PropTypes.string,
   size: PropTypes.string,
   className: PropTypes.string,
   defaultTokenLogo: PropTypes.string,

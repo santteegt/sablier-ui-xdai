@@ -28,10 +28,10 @@
     "durationLowerThanInterval": "Duration between times cannot be lower than the selected interval",
     "intervalInvalid": "Please select an interval",
     "paymentDecimals": "Maximum 3 decimal points allowed",
-    "paymentInsufficientBalance": "Insufficient balance. You only have {{ balance }} {{ tokenSymbol }} in your Ethereum wallet.",
+    "paymentInsufficientBalance": "Insufficient balance. You only have {{ balance }} {{ tokenSymbol }} in your wallet.",
     "paymentInvalid": "Payment field cannot be left empty",
     "paymentZero": "Payment rate cannot be 0",
-    "recipientInvalid": "Please enter a valid Ethereum address",
+    "recipientInvalid": "Please enter a valid address",
     "recipientSelf": "You cannot pay yourself",
     "stopTimeLowerThanStartTime": "The stop time cannot be before the start time",
     "stopTimeInvalid": "Stop time field cannot be left empty",
@@ -55,7 +55,7 @@
   "info": "Info",
   "input": {
     "rate": "How much do you want to start paying?",
-    "recipient": "What is the Ethereum address of the recipient?",
+    "recipient": "What is the xDAI address of the recipient?",
     "times": "When should the stream start and when should it end?",
     "token": "What token do you want to use?",
     "verbatim": "Input"
@@ -67,7 +67,7 @@
   "link": "Link",
   "mailto": {
     "subject": "Sablier App ⏳",
-    "body": "I thought you might be interested in Sablier: a decentralized app for continuous payments on Ethereum. Check it out at https://beta.sablier.app!"
+    "body": "I thought you might be interested in Sablier: a decentralized app for continuous payments on XDAI. Check it out at https://sablier-xdai.on.fleek.co/!"
   },
   "mobileBan": "Sablier is currently not available on mobile. Follow us on Twitter @SablierHQ to be the first to know when it will be available.",
   "min": "Min",
@@ -85,7 +85,7 @@
   "noWallet": {
     "desktop": "Please visit us after installing Metamask on Chrome or Brave.",
     "mobile": "Please visit us from a web3-enabled mobile browser such as Trust Wallet or Coinbase Wallet.",
-    "title": "No Ethereum wallet found"
+    "title": "No wallet found"
   },
   "okay": "Okay",
   "ourFee": "Our Fee",
@@ -101,10 +101,10 @@
   "rate": "Rate",
   "recipient": "Recipient",
   "redeem": {
-    "confirm": "Are you sure? You will stop the stream and redeem the remaining {{ remaining }} {{ tokenSymbol }} to your Ethereum wallet. The recipient will only receive {{ paid }} {{ tokenSymbol }}, instead of the initial amount of {{ deposit }} {{ tokenSymbol }}.",
-    "success": "You successfully redeemed {{ senderAmount }} {{ tokenSymbol }} to your Ethereum wallet.",
+    "confirm": "Are you sure? You will stop the stream and redeem the remaining {{ remaining }} {{ tokenSymbol }} to your wallet. The recipient will only receive {{ paid }} {{ tokenSymbol }}, instead of the initial amount of {{ deposit }} {{ tokenSymbol }}.",
+    "success": "You successfully redeemed {{ senderAmount }} {{ tokenSymbol }} to your wallet.",
     "verbatim": "Redeem",
-    "warning": "This stream was redeemed on {{ redemptionTime }}, which means that the payer withdrew a portion or all of their funds back to their Ethereum wallet. If the redemption occurred after the stream started, your funds were automatically withdrawn to your wallet. The exact amount is shown under \"Earned\"."
+    "warning": "This stream was redeemed on {{ redemptionTime }}, which means that the payer withdrew a portion or all of their funds back to their wallet. If the redemption occurred after the stream started, your funds were automatically withdrawn to your wallet. The exact amount is shown under \"Earned\"."
   },
   "redeemed": "Redeemed",
   "redeemedByPayer": "Redeemed by payer",
@@ -130,7 +130,7 @@
   "to": "To",
   "today": "Today",
   "tokenApproval": {
-    "confirm": "This is the first time you're using Sablier with {{ tokenSymbol }}. You need to grant permission to interact with the tokens in your Ethereum wallet"
+    "confirm": "This is the first time you're using Sablier with {{ tokenSymbol }}. You need to grant permission to interact with the tokens in your wallet"
   },
   "tomorrow": "Tomorrow",
   "tooltip": {
@@ -144,7 +144,7 @@
   "week": "Week",
   "week_plural": "Weeks",
   "withdraw": {
-    "success": "Ka-Ching! You successfully withdrew {{ amount }} {{ tokenSymbol }} to your Ethereum wallet.",
+    "success": "Ka-Ching! You successfully withdrew {{ amount }} {{ tokenSymbol }} to your wallet.",
     "verbatim": "Withdraw",
     "empty": "All funds withdrawn"
   },
