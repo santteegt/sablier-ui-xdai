@@ -16,7 +16,7 @@ export const MAINNET_BLOCK_TIME_AVERAGE = BN(15);
 
 export const INTERVALS = {
   minute: "Minute",
-  quarterHour: "Quarter-Hour",
+  // quarterHour: "Quarter-Hour",
   hour: "Hour",
   day: "Day",
 };

@@ -61,16 +61,16 @@ class IntervalPanel extends Component {
 
   render() {
     const { className, interval, t } = this.props;
-    // const { showIntervalDropdown } = this.state;
+    const { showIntervalDropdown } = this.state;
 
     return (
       <div
         className={classnames("interval-panel", className)}
         onClick={() => {
-          // this.setState({ showIntervalDropdown: !showIntervalDropdown });
+          this.setState({ showIntervalDropdown: !showIntervalDropdown });
         }}
         onKeyDown={() => {
-          // this.setState({ showIntervalDropdown: !showIntervalDropdown });
+          this.setState({ showIntervalDropdown: !showIntervalDropdown });
         }}
         role="button"
         tabIndex={0}
