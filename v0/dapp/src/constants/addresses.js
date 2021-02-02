@@ -40,7 +40,14 @@ export const LOCAL = {
 export const XDAI = {
   tokenAddresses: {
     addresses: [
-      ["wxDAI", "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d"],
+      ["wxDAI", 
+        "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d", 
+        "https://raw.githubusercontent.com/1Hive/default-token-list/master/src/assets/xdai/0xe91d153e0b41518a2ce8dd3d7944fa863463a97d/logo.png"
+      ],
+      ["PAN", 
+        "0x981fB9BA94078a2275A8fc906898ea107B9462A8",
+        "https://assets.coingecko.com/coins/images/9543/small/pan-logo.png"
+      ],
       // ["DAI", "0x44fA8E6f47987339850636F88629646662444217"],
       // ["POA20", "0x985e144EB355273c4B4D51E448B68b657F482E26"],
       // ["USDC", "0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83"],
@@ -48,6 +55,7 @@ export const XDAI = {
   },
   tokenAddressesToSymbols: {
     "0xe91D153E0b41518A2Ce8Dd3D7944Fa863463a97d": "wxDAI",
+    "0x981fB9BA94078a2275A8fc906898ea107B9462A8": "PAN",
     // "0x44fA8E6f47987339850636F88629646662444217": "DAI",
     // "0x985e144EB355273c4B4D51E448B68b657F482E26": "POA20",
     // "0xDDAfbb505ad214D7b80b1f830fcCc89B60fb7A83": "USDC",

@@ -24,7 +24,7 @@ export const setAddresses = networkId => {
     // xDAI
     case 100:
     case "100": {
-      let tokens = HoneyTokens.tokens.filter(token => token.chainId === 100);
+      let tokens = HoneyTokens.tokens.filter(token => token.chainId === 100 && token.symbol !== 'WXDAI');
       XDAI.tokenAddresses.addresses.push(...tokens.map(token => [token.symbol, token.address, token.logoURI]));
       XDAI.tokenAddressesToSymbols = Object.assign(XDAI.tokenAddressesToSymbols, ...tokens.map(token => {
         const addToSymbol = {};
